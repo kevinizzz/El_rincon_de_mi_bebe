@@ -5,6 +5,21 @@ require('dotenv').config();
 
 const app = express();
 
+// Servir archivos estáticos del frontend
+app.use(express.static(path.join(__dirname, '../frontend')));
+app.use('/css', express.static(path.join(__dirname, '../frontend/css')));
+app.use('/js', express.static(path.join(__dirname, '../frontend/js')));
+app.use('/images', express.static(path.join(__dirname, '../frontend/images')));
+
+// Ruta para páginas HTML (opcional, para que /inicio funcione)
+app.get('/inicio', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages/inicio.html'));
+});
+app.get('/catalogo', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages/catalogo.html'));
+});
+// Añade otras páginas (promociones, nosotros, favoritos, etc.)
+
 // Middlewares globales
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
