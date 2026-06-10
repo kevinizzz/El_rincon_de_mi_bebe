@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promociones | El rincón de mi Bebé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/stylepromociones.css">
+</head>
+<body>
+
+<header class="encabezado_principal">
+    <nav class="contenedor_navegacion">
+        <input type="checkbox" id="controlador_menu" class="input_menu_oculto">
+        <label for="controlador_menu" class="boton_hamburguesa">
+            <span class="linea_menu"></span><span class="linea_menu"></span><span class="linea_menu"></span>
+        </label>
+        <div class="seccion_logo">
+            <a href="inicio.html" class="enlace_logo">
+                <img src="../images/logo.png" alt="Logo" class="imagen_logo">
+                <span class="nombre_marca">El rincón de mi Bebé</span>
+            </a>
+        </div>
+        <ul class="lista_navegacion">
+            <li><a href="inicio.html" class="enlace_menu">Inicio</a></li>
+            <li><a href="catalogo.html" class="enlace_menu">Catálogo</a></li>
+            <li><a href="promociones.html" class="enlace_menu activo">Promociones</a></li>
+            <li><a href="nosotros.html" class="enlace_menu">Nosotros</a></li>
+        </ul>
+        <div class="acciones_usuario">
+            <a href="favoritos.html" class="boton_accion"><img src="../images/favorito.png" alt="Favoritos"></a>
+            <a href="admin_dashboard.html" class="boton_accion"><img src="../images/usuario.png" alt="Usuario"></a>
+        </div>
+    </nav>
+</header>
+
+<!-- Promociones destacadas -->
+<section class="seccion_promociones">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">Promociones destacadas</h2>
+        <p>Los productos con descuento más populares</p>
+    </div>
+    <div class="rejilla_productos" id="destacadasContainer"></div>
+</section>
+
+<!-- Combos especiales -->
+<section class="seccion_combos">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">Combos especiales</h2>
+        <p>Ahorra más comprando juntos</p>
+    </div>
+    <div class="rejilla_combos" id="combosContainer"></div>
+</section>
+
+<!-- Ofertas por categoría -->
+<section class="seccion_promociones_categoria">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">Ofertas por categoría</h2>
+        <p>Descuentos en toda una categoría</p>
+    </div>
+    <div class="rejilla_categorias_promo" id="categoriasPromoContainer"></div>
+</section>
+
+<!-- Ofertas de temporada -->
+<section class="seccion_promociones_temporada">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">Ofertas de temporada</h2>
+        <p>Lo mejor de cada estación</p>
+    </div>
+    <div class="rejilla_productos" id="temporadaPromoContainer"></div>
+</section>
+
+<footer class="pie_pagina">
+    <div class="contenedor_footer">
+        <div class="copyright">© 2026 El rincón de mi Bebé</div>
+        <div class="redes_sociales">
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+    </div>
+</footer>
+
+<script src="../js/public-session.js"></script>
+<script src="../js/global.js"></script>
+<script src="../js/promociones.js"></script>
+</body>
+</html>

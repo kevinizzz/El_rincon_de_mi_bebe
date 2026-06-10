@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorías y Temporadas | El rincón de mi Bebé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin-wrapper.css">
+    <link rel="stylesheet" href="../css/styleadmin-categorias.css">
+</head>
+<body>
+
+<div class="admin-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="Logo" class="logo-sidebar-img">
+            <h3>El rincón de mi Bebé</h3>
+            <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+            <a href="admin-productos.html" class="nav-item"><i class="fas fa-tshirt"></i><span>Productos</span></a>
+            <a href="admin-categorias.html" class="nav-item active"><i class="fas fa-tags"></i><span>Categorías / Temporadas</span></a>
+            <a href="admin-promociones.html" class="nav-item"><i class="fas fa-percent"></i><span>Promociones</span></a>
+            <a href="admin-configuracion.html" class="nav-item"><i class="fas fa-cog"></i><span>Configuración</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="admin-header">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <div class="header-title">
+                <h1>Categorías y Temporadas</h1>
+                <p>Administra las categorías y temporadas del catálogo</p>
+            </div>
+            <div class="header-actions">
+                <i class="fas fa-bell"></i>
+                <div class="admin-avatar">A</div>
+            </div>
+        </header>
+
+        <div class="categorias-temporadas-grid">
+            <!-- Columna Categorías -->
+            <div class="columna">
+                <div class="columna-header">
+                    <h2>Categorías</h2>
+                    <button class="btn-primary agregar-categoria-btn"><i class="fas fa-plus"></i> Nueva categoría</button>
+                </div>
+                <!-- Barra de búsqueda para categorías -->
+                <div class="search-columna">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchCategorias" placeholder="Buscar categoría...">
+                </div>
+                <div class="tarjetas-grid" id="categoriasGrid">
+                    <!-- Se llena con JS -->
+                </div>
+            </div>
+
+            <!-- Columna Temporadas -->
+            <div class="columna">
+                <div class="columna-header">
+                    <h2>Temporadas</h2>
+                    <button class="btn-primary agregar-temporada-btn"><i class="fas fa-plus"></i> Nueva temporada</button>
+                </div>
+                <!-- Barra de búsqueda para temporadas -->
+                <div class="search-columna">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchTemporadas" placeholder="Buscar temporada...">
+                </div>
+                <div class="tarjetas-grid" id="temporadasGrid">
+                    <!-- Se llena con JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal para categoría -->
+<div id="categoriaModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container modal-small">
+        <div class="modal-header">
+            <h2 id="categoriaModalTitle">Nueva categoría</h2>
+            <button class="modal-close" id="closeCategoriaModalBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="categoriaForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nombre de la categoría</label>
+                    <input type="text" id="categoriaNombre" required placeholder="Ej: Ropa de bebé">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary cancel-categoria-modal">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para temporada -->
+<div id="temporadaModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container modal-small">
+        <div class="modal-header">
+            <h2 id="temporadaModalTitle">Nueva temporada</h2>
+            <button class="modal-close" id="closeTemporadaModalBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="temporadaForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nombre de la temporada</label>
+                    <input type="text" id="temporadaNombre" required placeholder="Ej: Verano 2025">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary cancel-temporada-modal">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../js/admin-categorias.js"></script>
+</body>
+</html>

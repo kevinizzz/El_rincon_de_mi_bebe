@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Test</title></head>
+<body>
+  <div id="info"></div>
+  <script>
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) {
+      document.getElementById('info').innerHTML = 'No se especificó ID de producto';
+    } else {
+      fetch(`http://localhost:3000/api/productos/${id}`)
+        .then(r => r.json())
+        .then(data => {
+          // La respuesta es directamente el objeto producto
+          document.getElementById('info').innerHTML = `
+            <h1>${data.nombre || 'Sin nombre'}</h1>
+            <p>Precio: C$ ${data.precio ? parseFloat(data.precio).toFixed(2) : '0'}</p>
+            <p>Categoría: ${data.categoria_nombre || 'Sin categoría'}</p>
+            <img src="${data.imagen_principal || ''}" style="max-width:300px;">
+          `;
+        })
+        .catch(err => {
+          document.getElementById('info').innerHTML = 'Error: ' + err.message;
+        });
+    }
+  </script>
+</body>
+</html>

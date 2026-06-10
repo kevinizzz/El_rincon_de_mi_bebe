@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio | El rincón de mi Bebé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/styleindex.css">
+</head>
+<body>
+
+<header class="encabezado_principal">
+    <nav class="contenedor_navegacion">
+        <input type="checkbox" id="controlador_menu" class="input_menu_oculto">
+        <label for="controlador_menu" class="boton_hamburguesa">
+            <span class="linea_menu"></span>
+            <span class="linea_menu"></span>
+            <span class="linea_menu"></span>
+        </label>
+        <div class="seccion_logo">
+            <a href="inicio.html" class="enlace_logo">
+                <img src="../images/logo.png" alt="Logo" class="imagen_logo">
+                <span class="nombre_marca">El rincón de mi Bebé</span>
+            </a>
+        </div>
+        <ul class="lista_navegacion">
+            <li><a href="inicio.html" class="enlace_menu activo">Inicio</a></li>
+            <li><a href="catalogo.html" class="enlace_menu">Catálogo</a></li>
+            <li><a href="promociones.html" class="enlace_menu">Promociones</a></li>
+            <li><a href="nosotros.html" class="enlace_menu">Nosotros</a></li>
+        </ul>
+        <div class="acciones_usuario">
+            <a href="favoritos.html" class="boton_accion">
+                <img src="../images/favorito.png" alt="Favoritos">
+            </a>
+            <a href="admin_dashboard.html" class="boton_accion">
+                <img src="../images/usuario.png" alt="Usuario">
+            </a>
+        </div>
+    </nav>
+</header>
+
+<!-- Hero -->
+<section class="contenedor_hero">
+    <div class="tarjeta_hero">
+        <div class="contenido_hero">
+            <span class="etiqueta_temporada">COLECCIÓN 2026</span>
+            <h1 class="titulo_principal">Descubre estilos cómodos y modernos para tu bebé</h1>
+            <p class="descripcion_hero">Explora ropa infantil cuidadosamente seleccionada, tendencias de temporada y prendas diseñadas para brindar comodidad en cada etapa.</p>
+            <a href="catalogo.html" class="boton_primario">Explorar catálogo</a>
+        </div>
+        <div class="cuadro_rojo"></div>
+    </div>
+</section>
+
+<!-- Categorías populares (Top 6) -->
+<section class="seccion_categorias">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">Explora categorías</h2>
+    </div>
+    <div class="rejilla_categorias" id="categoriasContainer"></div>
+</section>
+
+<!-- Productos destacados (mejor calificados) -->
+<section class="seccion_destacados">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">Productos destacados</h2>
+        <a href="catalogo.html" class="boton_secundario">Ver catálogo completo</a>
+    </div>
+    <div class="rejilla_productos" id="destacadosContainer"></div>
+</section>
+
+<!-- Tendencias de la semana (más vistos) -->
+<section class="seccion_tendencias">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">Tendencias de esta semana</h2>
+    </div>
+    <div class="contenedor_tendencias" id="tendenciasContainer"></div>
+</section>
+
+<!-- Promoción destacada -->
+<section class="seccion_promociones">
+    <div class="tarjeta_promocion" id="promocionContainer"></div>
+</section>
+
+<!-- Recomendados para ti -->
+<section class="seccion_recomendados">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">Recomendados para ti</h2>
+    </div>
+    <div class="rejilla_productos" id="recomendadosContainer"></div>
+</section>
+
+<!-- Ayuda WhatsApp -->
+<section class="seccion_ayuda">
+    <div class="tarjeta_ayuda">
+        <h2 class="titulo_ayuda">¿Necesitas ayuda para elegir?</h2>
+        <p class="texto_ayuda">Nuestro equipo puede ayudarte a encontrar prendas cómodas, modernas y adecuadas para cada etapa de crecimiento.</p>
+        <a href="https://wa.me/50512345678?text=Hola%2C%20necesito%20ayuda%20para%20elegir%20ropa%20infantil" class="boton_soporte" target="_blank">
+            <i class="fa-brands fa-whatsapp"></i> Contacta atención personalizada
+        </a>
+    </div>
+</section>
+
+<footer class="pie_pagina">
+    <div class="contenedor_footer">
+        <div class="copyright">© 2026 El rincón de mi Bebé</div>
+        <div class="redes_sociales">
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+    </div>
+</footer>
+
+<script src="../js/public-session.js"></script>
+<script src="../js/global.js"></script>
+<script src="../js/inicio.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo | El rincón de mi Bebé</title>
+    <link rel="stylesheet" href="../css/stylecatalogo.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<header class="encabezado_principal">
+    <nav class="contenedor_navegacion">
+        <input type="checkbox" id="controlador_menu" class="input_menu_oculto">
+        <label for="controlador_menu" class="boton_hamburguesa">
+            <span class="linea_menu"></span><span class="linea_menu"></span><span class="linea_menu"></span>
+        </label>
+        <div class="seccion_logo">
+            <a href="inicio.html" class="enlace_logo">
+                <img src="../images/logo.png" alt="Logo" class="imagen_logo">
+                <span class="nombre_marca">El rincón de mi Bebé</span>
+            </a>
+        </div>
+        <ul class="lista_navegacion">
+            <li><a href="inicio.html" class="enlace_menu">Inicio</a></li>
+            <li><a href="catalogo.html" class="enlace_menu activo">Catálogo</a></li>
+            <li><a href="promociones.html" class="enlace_menu">Promociones</a></li>
+            <li><a href="nosotros.html" class="enlace_menu">Nosotros</a></li>
+        </ul>
+        <div class="acciones_usuario">
+            <!-- ELIMINADO: <button class="boton_accion"><img src="../images/buscar.png" alt="Buscar"></button> -->
+            <a href="favoritos.html" class="boton_accion"><img src="../images/favorito.png" alt="Favoritos"></a>
+            <a href="perfil.html" class="boton_accion"><img src="../images/usuario.png" alt="Usuario"></a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero_catalogo">
+    <div class="tarjeta_hero_catalogo"><div class="banner_catalogo"></div></div>
+</section>
+
+<main class="contenedor_catalogo">
+    <!-- Barra lateral de filtros -->
+    <aside class="barra_lateral_filtros">
+        <div class="tarjeta_sidebar">
+            <div class="encabezado_sidebar"><h3>Filtros</h3></div>
+            <div class="grupo_filtro">
+                <h4 class="subtitulo_filtro">Categorías</h4>
+                <ul class="lista_categorias" id="categoriasList"></ul>
+            </div>
+            <div class="grupo_filtro">
+                <h4 class="subtitulo_filtro">Precio</h4>
+                <div class="rango_precio">
+                    <div class="campo_precio">
+                        <label>Mínimo (C$)</label>
+                        <input type="number" id="precioMin" placeholder="0" min="0" step="10">
+                    </div>
+                    <span class="separador">—</span>
+                    <div class="campo_precio">
+                        <label>Máximo (C$)</label>
+                        <input type="number" id="precioMax" placeholder="9999" min="0" step="10">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sección de productos -->
+    <section class="seccion_productos_catalogo">
+        <!-- Barra de herramientas superior (con búsqueda) -->
+        <div class="barra_superior_catalogo">
+            <div class="controles_izquierda">
+                <button class="boton_toggle_filtros_nuevo" id="toggleFiltros">
+                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                    <span id="textoFiltro">Ocultar Filtros</span>
+                </button>
+            </div>
+            
+            <!-- BARRA DE BÚSQUEDA (nueva) -->
+            <div class="search-bar-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar productos...">
+            </div>
+
+            <div class="controles_derecha">
+                <div class="contenedor_selector">
+                    <label>Ordenar por:</label>
+                    <select id="sortSelect">
+                        <option value="recent">Novedades</option>
+                        <option value="popular">Más populares</option>
+                        <option value="price_asc">Precio: menor a mayor</option>
+                        <option value="price_desc">Precio: mayor a menor</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="rejilla_productos" id="productsGrid"></div>
+        <div class="paginacion" id="pagination"></div>
+    </section>
+</main>
+
+<footer class="pie_pagina">
+    <div class="contenedor_footer">
+        <div class="copyright">© 2026 El rincón de mi Bebé</div>
+        <div class="redes_sociales">
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+    </div>
+</footer>
+
+<script src="../js/global.js"></script>
+<script src="../js/catalogo.js"></script>
+</body>
+</html>

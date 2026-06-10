@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | El rincón de mi Bebé</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin-wrapper.css">
+    <link rel="stylesheet" href="../css/styleadmin_dashboard.css">
+</head>
+<body>
+
+<div class="admin-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="Logo" class="logo-sidebar-img">
+            <h3>El rincón de mi Bebé</h3>
+            <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="admin_dashboard.html" class="nav-item active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+            <a href="admin-productos.html" class="nav-item"><i class="fas fa-tshirt"></i><span>Productos</span></a>
+            <a href="admin-categorias.html" class="nav-item"><i class="fas fa-tags"></i><span>Categorías / Temporadas</span></a>
+            <a href="admin-promociones.html" class="nav-item"><i class="fas fa-percent"></i><span>Promociones</span></a>
+            <a href="admin-configuracion.html" class="nav-item"><i class="fas fa-cog"></i><span>Configuración</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="admin-header">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <div class="header-title">
+                <h1>Dashboard</h1>
+                <p>Bienvenido de nuevo, Administrador</p>
+            </div>
+            <div class="header-actions">
+                <i class="fas fa-bell"></i>
+                <div class="admin-avatar">A</div>
+            </div>
+        </header>
+
+        <div id="dashboardSection" class="dashboard-section active-section">
+            <div class="metrics-grid" id="metricsGrid"></div>
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3>Sesiones por día</h3>
+                        <div class="legend"><span class="legend-dot"></span> Últimos 7 días</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sessionsChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3>Productos más vistos</h3>
+                        <div class="legend"><span class="legend-dot"></span> Visitas</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="topViewedChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-grid">
+                <div class="popular-products-card">
+                    <div class="card-header">
+                        <h3>Productos populares</h3>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <div class="popular-list" id="popularList"></div>
+                </div>
+                <div class="activity-card">
+                    <div class="card-header">
+                        <h3>Actividad reciente</h3>
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="activity-timeline" id="activityTimeline"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="../js/admin_dashboard.js"></script>
+</body>
+</html>

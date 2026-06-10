@@ -1,0 +1,456 @@
+/* ==========================================================================
+   GLOBAL.CSS - Estilos comunes para todas las páginas
+   El Rincón de mi Bebé
+   ========================================================================== */
+
+/* ===========================
+   1. VARIABLES CSS (TEMAS)
+   =========================== */
+:root {
+    --color-coral: #ff9a9e;
+    --color-coral-claro: #ffe2e2;
+    --color-coral-oscuro: #e8838b;
+    --color-texto-titulo: #1a2b40;
+    --color-texto-cuerpo: #666666;
+    --color-fondo-gris: #f9f9f9;
+    --borde-suave: #eeeeee;
+    --sombra-suave: 0 8px 20px rgba(0, 0, 0, 0.05);
+    --sombra-hover: 0 12px 24px rgba(0, 0, 0, 0.08);
+    --fuente-principal: 'Inter', sans-serif;
+    --ancho-maximo: 1200px;
+    --padding-container: 0 5%;
+}
+
+/* ===========================
+   2. RESET Y BASE
+   =========================== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--fuente-principal);
+    background: white;
+    color: var(--color-texto-titulo);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ===========================
+   3. CONTENEDORES COMUNES
+   =========================== */
+.contenedor {
+    max-width: var(--ancho-maximo);
+    margin: 0 auto;
+    padding: var(--padding-container);
+}
+
+.contenedor-ancho {
+    width: 100%;
+    padding: var(--padding-container);
+}
+
+/* ===========================
+   4. BOTONES Y ENLACES PRINCIPALES
+   =========================== */
+.boton_primario {
+    display: inline-block;
+    padding: 16px 30px;
+    border-radius: 14px;
+    background: var(--color-coral);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.boton_primario:hover {
+    background: var(--color-coral-oscuro);
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-suave);
+}
+
+.boton_secundario {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 12px;
+    border: 1px solid var(--borde-suave);
+    background: white;
+    color: var(--color-texto-titulo);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.boton_secundario:hover {
+    border-color: var(--color-coral);
+    background: var(--color-coral-claro);
+}
+
+/* ===========================
+   5. ENCABEZADO (HEADER) Y NAVEGACIÓN
+   =========================== */
+.encabezado_principal {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: 20px 5%;
+    background: white;
+    border-bottom: 1px solid var(--borde-suave);
+    z-index: 1000;
+}
+
+.contenedor_navegacion {
+    max-width: var(--ancho-maximo);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: nowrap;
+}
+
+/* Logo */
+.seccion_logo {
+    flex-shrink: 0;
+}
+
+.enlace_logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.imagen_logo {
+    height: 32px;
+    width: auto;
+}
+
+.nombre_marca {
+    margin-left: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-texto-titulo);
+}
+
+/* Menú de navegación (centrado) */
+.lista_navegacion {
+    display: flex;
+    list-style: none;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center;
+    transition: flex 0.25s ease;
+    align-items: center;
+}
+
+.enlace_menu {
+    text-decoration: none;
+    color: var(--color-texto-cuerpo);
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.enlace_menu:hover {
+    color: var(--color-texto-titulo);
+}
+
+.enlace_menu.activo {
+    color: var(--color-texto-titulo);
+    font-weight: 700;
+    border-bottom: 2px solid var(--color-coral);
+    padding-bottom: 5px;
+}
+
+/* Acciones del usuario (íconos) */
+.acciones_usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+}
+
+.boton_accion {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-fondo-gris);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.boton_accion img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.boton_accion:hover {
+    background: var(--color-coral);
+    transform: translateY(-3px);
+}
+
+.boton_accion:hover img {
+    filter: brightness(0) invert(1);
+}
+
+/* ===========================
+   6. MENÚ HAMBURGUESA (MÓVIL)
+   =========================== */
+.input_menu_oculto {
+    display: none;
+}
+
+.boton_hamburguesa {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 8px;
+}
+
+.linea_menu {
+    width: 25px;
+    height: 3px;
+    border-radius: 10px;
+    background: var(--color-texto-titulo);
+    transition: 0.3s;
+}
+
+/* ===========================
+   7. PIE DE PÁGINA (FOOTER)
+   =========================== */
+.pie_pagina {
+    margin-top: 80px;
+    padding: 40px 5%;
+    border-top: 1px solid var(--borde-suave);
+    background: white;
+}
+
+.contenedor_footer {
+    max-width: var(--ancho-maximo);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.copyright {
+    color: var(--color-texto-cuerpo);
+    font-size: 0.85rem;
+}
+
+.redes_sociales {
+    display: flex;
+    gap: 15px;
+}
+
+.boton_red_social {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--color-fondo-gris);
+    color: var(--color-texto-titulo);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s;
+}
+
+.boton_red_social:hover {
+    background: var(--color-coral);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* ===========================
+   8. COMPONENTES REUTILIZABLES
+   =========================== */
+.tarjeta_producto_base {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.tarjeta_producto_base:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-hover);
+}
+
+.contenedor_imagen_cuadrada {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 24px;
+    background: var(--color-fondo-gris);
+    overflow: hidden;
+}
+
+.badge_producto {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: white;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-coral);
+    z-index: 2;
+    box-shadow: var(--sombra-suave);
+}
+
+.precio_actual {
+    color: var(--color-coral);
+    font-weight: 700;
+}
+
+.precio_anterior {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 0.9rem;
+}
+
+
+
+/* ===========================
+   9. RESPONSIVE (COMÚN)
+   =========================== */
+@media (max-width: 850px) {
+
+    .contenedor_navegacion{
+        position: relative;
+    }
+
+    .boton_hamburguesa{
+        display: flex;
+        order: 1;
+        z-index: 1001;
+    }
+
+    .seccion_logo{
+        order: 2;
+        flex: 1;
+    }
+
+    .acciones_usuario{
+        order: 3;
+    }
+
+    .lista_navegacion{
+        position: absolute;
+        top: 100%;
+        left: 50%;
+
+        width: 100vw;
+        max-width: none;
+
+        background: white;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+
+        gap: 20px;
+        padding: 25px;
+
+        list-style: none;
+
+        border-bottom: 1px solid var(--borde-suave);
+        box-shadow: var(--sombra-suave);
+
+        opacity: 0;
+        visibility: hidden;
+
+        transform: translateX(-50%) translateY(-10px);
+
+        transition:
+            opacity 0.3s ease,
+            transform 0.3s ease,
+            visibility 0.3s ease;
+
+        z-index: 999;
+    }
+
+    .input_menu_oculto:checked ~ .lista_navegacion{
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .lista_navegacion li{
+        width: 100%;
+    }
+
+    .lista_navegacion .enlace_menu{
+        display: block;
+        width: 100%;
+        padding: 12px 0;
+    }
+
+    .nombre_marca{
+        font-size: 1rem;
+    }
+
+    .contenedor_footer{
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .redes_sociales{
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .encabezado_principal{
+        padding: 15px 5%;
+    }
+
+    .boton_primario{
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+
+    .boton_secundario{
+        padding: 8px 16px;
+    }
+
+    .nombre_marca{
+        display: none;
+    }
+}

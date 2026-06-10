@@ -1,0 +1,413 @@
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS PARA LA PÁGINA DE INICIO
+   ========================================================================== */
+
+/* ===========================
+   1. SECCIÓN HERO (BANNER PRINCIPAL)
+   =========================== */
+.contenedor_hero {
+    width: 100%;
+    padding: 60px 5%;
+}
+
+.tarjeta_hero {
+    max-width: 1200px;
+    margin: auto;
+    padding: 60px;
+    border-radius: 32px;
+    background: #f5f6f8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+    overflow: hidden;
+}
+
+.contenido_hero {
+    flex: 1;
+}
+
+.etiqueta_temporada {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: var(--color-coral-claro);
+    color: var(--color-coral);
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.titulo_principal {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 25px;
+}
+
+.descripcion_hero {
+    max-width: 500px;
+    color: var(--color-texto-cuerpo);
+    margin-bottom: 35px;
+    font-size: 1.05rem;
+}
+
+.cuadro_rojo {
+    flex: 1;
+    min-height: 420px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #ff9a9e, #ffb6b9);
+}
+
+/* ===========================
+   2. SECCIONES COMUNES
+   =========================== */
+.seccion_categorias,
+.seccion_destacados,
+.seccion_tendencias,
+.seccion_promociones,
+.seccion_recomendados,
+.seccion_ayuda {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 0 5%;
+}
+
+.encabezado_seccion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.titulo_seccion {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* ===========================
+   3. CATEGORÍAS (grid de 6)
+   =========================== */
+.rejilla_categorias {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+}
+
+.tarjeta_categoria {
+    background: var(--color-fondo-gris);
+    padding: 25px 15px;
+    border-radius: 22px;
+    text-decoration: none;
+    color: var(--color-texto-titulo);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.tarjeta_categoria i {
+    font-size: 2rem;
+}
+
+.tarjeta_categoria span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tarjeta_categoria small {
+    font-size: 0.7rem;
+    color: #f39c12;
+}
+
+.tarjeta_categoria:hover {
+    background: var(--color-coral);
+    color: white;
+    transform: translateY(-5px);
+}
+.tarjeta_categoria:hover small {
+    color: white;
+}
+
+/* ===========================
+   4. PRODUCTOS (grid)
+   =========================== */
+.rejilla_productos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+}
+
+/* Resto de estilos de productos (igual que antes) */
+.tarjeta_producto {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+.tarjeta_producto:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+}
+.contenedor_imagen_producto {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1.2;
+    background: var(--color-fondo-gris);
+    overflow: hidden;
+}
+.contenedor_imagen_producto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+.tarjeta_producto:hover .contenedor_imagen_producto img {
+    transform: scale(1.03);
+}
+.badge_producto.descuento {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #ff4757;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 30px;
+    z-index: 2;
+}
+.info_producto {
+    padding: 16px;
+}
+.meta_producto {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.categoria_producto {
+    color: var(--color-texto-cuerpo);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+.rating-estrellas {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.8rem;
+}
+.rating-estrellas i {
+    color: #ffb648;
+}
+.rating-count {
+    font-size: 0.7rem;
+    color: #888;
+    margin-left: 4px;
+}
+.sin-opiniones {
+    font-size: 0.7rem;
+    color: #aaa;
+}
+.nombre_producto {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+.product-price, .product-price-normal {
+    margin: 12px 0;
+    font-weight: 700;
+}
+.product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.old-price {
+    text-decoration: line-through;
+    color: #aaa;
+    font-size: 0.85rem;
+}
+.discount-price {
+    color: #ff4757;
+    font-size: 1.1rem;
+}
+.product-price-normal {
+    color: var(--color-coral);
+    font-size: 1.1rem;
+}
+.boton_producto {
+    width: 100%;
+    height: 42px;
+    border: 1px solid var(--borde-suave);
+    background: white;
+    border-radius: 40px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--color-texto-titulo);
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+.boton_producto:hover {
+    background: var(--color-coral);
+    color: white;
+    border-color: var(--color-coral);
+}
+
+/* ===========================
+   5. TENDENCIAS
+   =========================== */
+.contenedor_tendencias {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+.tarjeta_tendencia {
+    padding: 35px;
+    border-radius: 24px;
+    background: var(--color-fondo-gris);
+    transition: 0.3s;
+}
+.tarjeta_tendencia span {
+    color: var(--color-coral);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+.tarjeta_tendencia h3 {
+    margin-top: 12px;
+    font-size: 1.4rem;
+}
+.tarjeta_tendencia:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-suave);
+}
+
+/* ===========================
+   6. PROMOCIONES
+   =========================== */
+.tarjeta_promocion {
+    background: linear-gradient(135deg, #fff1f2, #ffe2e2);
+    border-radius: 30px;
+    padding: 70px;
+}
+.etiqueta_promocion {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--color-coral);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+.contenido_promocion h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+.contenido_promocion p {
+    max-width: 600px;
+    margin-bottom: 30px;
+    color: var(--color-texto-cuerpo);
+}
+
+/* ===========================
+   7. AYUDA WHATSAPP
+   =========================== */
+.tarjeta_ayuda {
+    background: var(--color-fondo-ayuda);
+    border-radius: 30px;
+    padding: 80px 40px;
+    text-align: center;
+}
+.titulo_ayuda {
+    font-size: 2.3rem;
+    margin-bottom: 20px;
+}
+.texto_ayuda {
+    max-width: 650px;
+    margin: 0 auto 30px;
+    color: var(--color-texto-cuerpo);
+}
+.boton_soporte {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #25d366;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 60px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.boton_soporte:hover {
+    background: #128c7e;
+    transform: translateY(-2px);
+}
+
+/* ===========================
+   8. RESPONSIVE (solo ajustes de grid)
+   =========================== */
+@media (max-width: 1000px) {
+    .rejilla_categorias {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .rejilla_productos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .contenedor_tendencias {
+        grid-template-columns: 1fr;
+    }
+    .tarjeta_hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px;
+    }
+    .descripcion_hero {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .cuadro_rojo {
+        width: 100%;
+        min-height: 250px;
+    }
+}
+@media (max-width: 850px) {
+    .titulo_principal {
+        font-size: 2.5rem;
+    }
+    .titulo_seccion {
+        font-size: 1.7rem;
+    }
+    .encabezado_seccion {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+@media (max-width: 600px) {
+    .rejilla_categorias {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .rejilla_productos {
+        grid-template-columns: 1fr;
+    }
+    .tarjeta_hero {
+        padding: 30px 20px;
+    }
+    .tarjeta_promocion {
+        padding: 40px 20px;
+    }
+    .titulo_principal {
+        font-size: 2rem;
+    }
+    .contenido_promocion h2 {
+        font-size: 1.8rem;
+    }
+}

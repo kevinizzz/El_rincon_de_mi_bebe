@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración | El rincón de mi Bebé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin-wrapper.css">
+    <link rel="stylesheet" href="../css/styleadmin-configuracion.css">
+</head>
+<body>
+
+<div class="admin-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="Logo" class="logo-sidebar-img">
+            <h3>El rincón de mi Bebé</h3>
+            <button class="close-sidebar" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="admin_dashboard.html" class="nav-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+            <a href="admin-productos.html" class="nav-item"><i class="fas fa-tshirt"></i><span>Productos</span></a>
+            <a href="admin-categorias.html" class="nav-item"><i class="fas fa-tags"></i><span>Categorías / Temporadas</span></a>
+            <a href="admin-promociones.html" class="nav-item"><i class="fas fa-percent"></i><span>Promociones</span></a>
+            <a href="admin-configuracion.html" class="nav-item active"><i class="fas fa-cog"></i><span>Configuración</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="admin-header">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <div class="header-title">
+                <h1>Configuración</h1>
+                <p>Administra los datos generales de la tienda</p>
+            </div>
+            <div class="header-actions">
+                <i class="fas fa-bell"></i>
+                <div class="admin-avatar">A</div>
+            </div>
+        </header>
+
+        <div class="config-grid">
+            <!-- Columna izquierda: información general y contacto -->
+            <div class="config-card">
+                <h2>Información de la tienda</h2>
+                <form id="infoForm">
+                    <div class="form-group">
+                        <label>Nombre de la tienda</label>
+                        <input type="text" id="tiendaNombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción corta (para SEO)</label>
+                        <textarea id="tiendaDescripcion" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Moneda (símbolo)</label>
+                        <input type="text" id="moneda" value="C$" maxlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Dirección</label>
+                        <input type="text" id="direccion" placeholder="Calle, número, ciudad">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="text" id="telefono" placeholder="+505 1234 5678">
+                        </div>
+                        <div class="form-group">
+                            <label>Email de contacto</label>
+                            <input type="email" id="email" placeholder="hola@ejemplo.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Horario de atención</label>
+                        <input type="text" id="horario" placeholder="Lunes a viernes 9am-6pm">
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar información</button>
+                </form>
+            </div>
+
+            <!-- Columna derecha: redes sociales y otros -->
+            <div class="config-card">
+                <h2>Redes sociales</h2>
+                <form id="socialForm">
+                    <div class="form-group">
+                        <label><i class="fab fa-instagram"></i> Instagram</label>
+                        <input type="text" id="instagram" placeholder="https://instagram.com/tuuser">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-facebook-f"></i> Facebook</label>
+                        <input type="text" id="facebook" placeholder="https://facebook.com/tupagina">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-tiktok"></i> TikTok</label>
+                        <input type="text" id="tiktok" placeholder="https://tiktok.com/@usuario">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-whatsapp"></i> WhatsApp (número con código)</label>
+                        <input type="text" id="whatsapp" placeholder="+505 8888 1234">
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar redes sociales</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sección adicional: preferencias de sistema (opcional) -->
+        <div class="config-card config-extra">
+            <h2>Preferencias del sistema</h2>
+            <form id="prefsForm">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="notificacionesEmail"> Enviar notificaciones por email
+                    </label>
+                </div>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="modoMantenimiento"> Modo mantenimiento (ocultar tienda)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Productos por página (paginación)</label>
+                    <input type="number" id="productosPorPagina" min="6" max="48" step="6" value="12">
+                </div>
+                <button type="submit" class="btn-primary">Guardar preferencias</button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<script src="../js/admin-configuracion.js"></script>
+</body>
+</html>

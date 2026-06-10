@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test de Sesiones</title>
+</head>
+<body>
+    <h1>Probando registro de sesión e interacciones</h1>
+    <button id="iniciar">1. Iniciar sesión</button>
+    <button id="heartbeat">2. Enviar heartbeat</button>
+    <button id="interaccion">3. Registrar ver producto (ID 1)</button>
+    <button id="verInteracciones">4. Ver últimas interacciones</button>
+    <pre id="output"></pre>
+
+    <script>
+        let session_uuid = localStorage.getItem('session_uuid');
+        const API = 'http://localhost:3000/api';
+
+        document.getElementById('iniciar').onclick = async () => {
+            const dispositivo = /Mobi/.test(navigator.userAgent) ? 'Móvil' : 'PC';
+            const navegador = navigator.userAgent;
+            const res = await fetch(`${API}/sesiones/iniciar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_uuid, dispositivo, navegador })
+            });
+            const data = await res.json();
+            if (data.session_uuid) localStorage.setItem('session_uuid', data.session_uuid);
+            document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+        };
+
+        document.getElementById('heartbeat').onclick = async () => {
+            const uuid = localStorage.getItem('session_uuid');
+            if (!uuid) return alert('Primero inicia sesión');
+            const res = await fetch(`${API}/sesiones/heartbeat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_uuid: uuid })
+            });
+            const data = await res.json();
+            document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+        };
+
+        document.getElementById('interaccion').onclick = async () => {
+            const uuid = localStorage.getItem('session_uuid');
+            if (!uuid) return alert('Primero inicia sesión');
+            const res = await fetch(`${API}/interacciones/registrar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_uuid: uuid, producto_id: 1, tipo_interaccion: 'ver_producto', tiempo_visualizacion_seg: 5 })
+            });
+            const data = await res.json();
+            document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+        };
+
+        document.getElementById('verInteracciones').onclick = async () => {
+            const res = await fetch(`${API}/interacciones/recientes?limite=5`);
+            const data = await res.json();
+            document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+        };
+    </script>
+</body>
+</html>

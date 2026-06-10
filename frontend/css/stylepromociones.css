@@ -1,0 +1,335 @@
+/* ==========================================================================
+   ESTILOS PARA LA PÁGINA DE PROMOCIONES
+   ========================================================================== */
+
+.seccion_promociones,
+.seccion_combos,
+.seccion_promociones_categoria,
+.seccion_promociones_temporada {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 5%;
+}
+
+.encabezado_seccion {
+    margin-bottom: 30px;
+    text-align: center;
+}
+.encabezado_seccion h2 {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+}
+.encabezado_seccion p {
+    color: var(--color-texto-cuerpo);
+}
+
+.rejilla_productos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+.rejilla_combos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+.rejilla_categorias_promo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+/* Tarjetas de producto */
+.tarjeta_producto {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    border: 1px solid #f0f0f0;
+}
+.tarjeta_producto:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+}
+.contenedor_imagen_producto {
+    position: relative;
+    aspect-ratio: 1 / 1.2;
+    background: #f9f9f9;
+}
+.contenedor_imagen_producto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.badge_producto.descuento {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #ff4757;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+}
+.info_producto {
+    padding: 16px;
+}
+.nombre_producto {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.product-price, .product-price-normal {
+    margin: 10px 0;
+    font-weight: 700;
+}
+.product-price .old-price {
+    text-decoration: line-through;
+    color: #aaa;
+    margin-right: 8px;
+}
+.product-price .discount-price {
+    color: #ff4757;
+}
+.boton_producto {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #eee;
+    background: white;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.boton_producto:hover {
+    background: var(--color-coral);
+    color: white;
+}
+
+/* ========== TARJETAS DE COMBO (MEJORADAS) ========== */
+.tarjeta_combo {
+    background: linear-gradient(135deg, #fff5e6, #ffe0b5);
+    border-radius: 28px;
+    padding: 40px 25px 25px 25px;  /* espacio superior para el badge */
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+.tarjeta_combo:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+.combo-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff9a9e;
+    color: white;
+    padding: 6px 15px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    z-index: 1;
+}
+.tarjeta_combo h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    margin-top: 0;
+    padding-right: 20px; /* evita que el título toque el badge */
+}
+.combo-descripcion {
+    color: #555;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+.combo-productos {
+    background: white;
+    padding: 10px;
+    border-radius: 20px;
+    margin: 10px 0;
+    font-size: 0.9rem;
+    word-break: break-word;
+}
+.combo-precio {
+    margin: 15px 0 20px;
+}
+.descuento {
+    background: #ff4757;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+.precio-combo {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+}
+.tarjeta_combo .boton_primario {
+    background: #ff9a9e;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    text-align: center;
+    margin-top: auto;
+}
+.tarjeta_combo .boton_primario:hover {
+    background: #e8838b;
+    transform: translateY(-2px);
+}
+
+/* Tarjetas de promociones por categoría */
+.tarjeta_promo_categoria {
+    background: var(--color-fondo-gris);
+    border-radius: 24px;
+    padding: 25px;
+    text-align: center;
+    transition: 0.2s;
+}
+.tarjeta_promo_categoria i {
+    font-size: 2.5rem;
+    color: var(--color-coral);
+    margin-bottom: 15px;
+}
+.tarjeta_promo_categoria h3 {
+    margin-bottom: 10px;
+}
+.tarjeta_promo_categoria p {
+    color: var(--color-texto-cuerpo);
+    margin-bottom: 20px;
+}
+.tarjeta_promo_categoria .boton_secundario {
+    display: inline-block;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px 20px;
+    border-radius: 40px;
+    text-decoration: none;
+    color: #333;
+    transition: 0.2s;
+}
+.tarjeta_promo_categoria .boton_secundario:hover {
+    background: #ff9a9e;
+    color: white;
+    border-color: #ff9a9e;
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+    .rejilla_productos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .rejilla_combos, .rejilla_categorias_promo {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .rejilla_productos, .rejilla_combos, .rejilla_categorias_promo {
+        grid-template-columns: 1fr;
+    }
+    .tarjeta_combo h3 {
+        font-size: 1.3rem;
+    }
+}
+
+/* ========== MODAL PARA COMBOS ========== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.modal-container {
+    background: white;
+    border-radius: 32px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 40px rgba(0,0,0,0.2);
+}
+.modal-header, .modal-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header {
+    border-bottom: 1px solid #eee;
+}
+.modal-footer {
+    border-top: 1px solid #eee;
+    justify-content: flex-end;
+    gap: 12px;
+}
+.modal-body {
+    padding: 20px;
+}
+.combo-detalle .combo-descuento {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff4757;
+    margin: 10px 0;
+}
+.combo-productos-lista ul {
+    padding-left: 20px;
+    margin: 8px 0;
+}
+.combo-fechas {
+    margin-top: 15px;
+    font-size: 0.8rem;
+    color: #666;
+}
+.btn-primary {
+    background: #28a745;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 40px;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+}
+.btn-primary:hover {
+    background: #28a745;
+}
+.btn-secondary {
+    background: #f0f0f0;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 40px;
+    cursor: pointer;
+}
+.btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+/* Botón de cerrar modal (X) mejorado */
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Producto | El rincón de mi Bebé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/styledetalleproducto.css">
+</head>
+<body>
+
+<!-- ================= HEADER (igual que en catálogo) ================= -->
+<header class="encabezado_principal">
+    <nav class="contenedor_navegacion">
+        <input type="checkbox" id="controlador_menu" class="input_menu_oculto">
+        <label for="controlador_menu" class="boton_hamburguesa">
+            <span class="linea_menu"></span><span class="linea_menu"></span><span class="linea_menu"></span>
+        </label>
+        <div class="seccion_logo">
+            <a href="inicio.html" class="enlace_logo">
+                <img src="../images/logo.png" alt="Logo" class="imagen_logo">
+                <span class="nombre_marca">El rincón de mi Bebé</span>
+            </a>
+        </div>
+        <ul class="lista_navegacion">
+            <li><a href="inicio.html" class="enlace_menu">Inicio</a></li>
+            <li><a href="catalogo.html" class="enlace_menu">Catálogo</a></li>
+            <li><a href="promociones.html" class="enlace_menu">Promociones</a></li>
+            <li><a href="nosotros.html" class="enlace_menu">Nosotros</a></li>
+        </ul>
+        <div class="acciones_usuario">
+            <button class="boton_accion"><img src="../images/buscar.png" alt="Buscar"></button>
+            <a href="favoritos.html" class="boton_accion"><img src="../images/favorito.png" alt="Favoritos"></a>
+            <a href="perfil.html" class="boton_accion"><img src="../images/usuario.png" alt="Usuario"></a>
+        </div>
+    </nav>
+</header>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb_producto_contenedor">
+    <nav class="breadcrumb_nav">
+        <a href="catalogo.html">Catálogo</a> <span>&gt;</span>
+        <span id="breadcrumbCategoria" class="pagina_actual"></span>
+    </nav>
+</div>
+
+<main class="contenedor_detalle_producto" id="productoDetalle">
+    <!-- El contenido se cargará dinámicamente con JS -->
+    <div style="text-align:center; padding:40px;">Cargando producto...</div>
+</main>
+
+<!-- Sección de productos relacionados (se llenará con JS) -->
+<section class="seccion_relacionados" id="relacionadosSection" style="display: none;">
+    <div class="encabezado_seccion">
+        <h2 class="titulo_seccion">También te puede interesar</h2>
+    </div>
+    <div class="rejilla_productos" id="productosRelacionadosGrid"></div>
+</section>
+
+<footer class="pie_pagina">
+    <div class="contenedor_footer">
+        <div class="copyright">© 2026 El rincón de mi Bebé</div>
+        <div class="redes_sociales">
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+    </div>
+</footer>
+
+<script src="../js/public-session.js"></script>
+<script src="../js/detalle.js"></script>
+</body>
+</html>

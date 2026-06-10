@@ -1,0 +1,281 @@
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS PARA LA PÁGINA NOSOTROS
+   ========================================================================== */
+
+.contenedor_nosotros {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 5% 0px;
+}
+
+/* HERO + ESTADÍSTICAS */
+.hero_nosotros {
+    background: linear-gradient(135deg, #fff5f5, #ffffff);
+    border-radius: 48px;
+    padding: 50px 40px;
+    margin-bottom: 80px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+}
+
+.hero_texto {
+    flex: 2;
+    min-width: 250px;
+}
+
+.hero_texto .etiqueta_coral {
+    background: var(--color-coral-claro);
+    color: var(--color-coral);
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.hero_texto h1 {
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero_texto p {
+    color: var(--color-texto-cuerpo);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    max-width: 500px;
+}
+
+.hero_stats {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.stat_card {
+    background: white;
+    border-radius: 28px;
+    padding: 25px 15px;
+    text-align: center;
+    box-shadow: var(--sombra-suave);
+    transition: 0.2s;
+}
+
+.stat_card:hover {
+    transform: translateY(-5px);
+}
+
+.stat_numero {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--color-coral);
+}
+
+.stat_label {
+    font-size: 0.85rem;
+    color: var(--color-texto-cuerpo);
+}
+
+/* QUIÉNES SOMOS - CONTENEDOR ENMARCADO */
+.quienes_somos {
+    margin-bottom: 80px;
+}
+
+.quienes_card {
+    gap: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+    background: var(--color-fondo-gris);
+    border-radius: 48px;
+    padding: 50px;
+    box-shadow: var(--sombra-suave);
+}
+
+.quienes_texto h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.quienes_texto p {
+    color: var(--color-texto-cuerpo);
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+.imagen_decorativa_gris {
+    background: #e0e0e0;
+    border-radius: 32px;
+    width: 100%;
+    aspect-ratio: 1 / 0.9;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23999999"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 80px;
+}
+
+/* QUÉ OFRECEMOS - 2 COLUMNAS EN ESCRITORIO, 1 EN MÓVIL */
+.que_ofrecemos {
+    margin-bottom: 80px;
+}
+
+.que_ofrecemos h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 40px;
+}
+
+.grid_ofrecemos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.tarjeta_ofrecemos {
+    background: var(--color-fondo-gris);
+    padding: 30px 20px;
+    border-radius: 32px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.tarjeta_ofrecemos:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--sombra-suave);
+}
+
+.tarjeta_ofrecemos i {
+    font-size: 2.5rem;
+    color: var(--color-coral);
+    margin-bottom: 15px;
+}
+
+.tarjeta_ofrecemos h3 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+}
+
+.tarjeta_ofrecemos p {
+    color: var(--color-texto-cuerpo);
+    font-size: 0.9rem;
+}
+
+/* CONTACTO con mapa destacado */
+.contacto_nosotros {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    background: #fef9f9;
+    border-radius: 48px;
+    padding: 50px;
+    margin-bottom: 40px;
+}
+
+.contacto_info h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.contacto_info > p {
+    color: var(--color-texto-cuerpo);
+    margin-bottom: 30px;
+}
+
+.info_linea {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 25px;
+    align-items: flex-start;
+}
+
+.info_linea i {
+    font-size: 1.5rem;
+    color: var(--color-coral);
+    margin-top: 4px;
+}
+
+.info_linea div {
+    font-size: 0.95rem;
+    color: var(--color-texto-cuerpo);
+}
+
+.info_linea strong {
+    color: var(--color-texto-titulo);
+}
+
+.boton_whatsapp_grande {
+    display: inline-block;
+    background: #25d366;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 40px;
+    font-weight: 700;
+    margin-top: 15px;
+    transition: 0.2s;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.boton_whatsapp_grande:hover {
+    background: #128c7e;
+    transform: scale(1.02);
+}
+
+.contacto_mapa .mapa_destacado iframe {
+    width: 100%;
+    height: 350px;
+    border-radius: 28px;
+    box-shadow: var(--sombra-suave);
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .hero_nosotros {
+        flex-direction: column;
+        text-align: center;
+    }
+    .hero_texto p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .quienes_card {
+        grid-template-columns: 1fr;
+        padding: 30px;
+    }
+    .quienes_imagen {
+        order: -1;
+    }
+    .contacto_nosotros {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero_stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    .hero_texto h1 {
+        font-size: 2rem;
+    }
+    .que_ofrecemos h2, .contacto_info h2 {
+        font-size: 1.6rem;
+    }
+    .grid_ofrecemos {
+        grid-template-columns: 1fr;  /* 1 por línea en móvil */
+    }
+    .contacto_nosotros {
+        padding: 30px;
+    }
+    .quienes_card {
+        padding: 25px;
+    }
+}
