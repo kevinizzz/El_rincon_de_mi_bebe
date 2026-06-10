@@ -1,5 +1,4 @@
 const mysql = require('mysql2/promise');
-// Cargar .env solo en desarrollo (no necesario en Railway)
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
@@ -21,7 +20,9 @@ const pool = mysql.createPool({
         console.log('✅ Conexión MySQL exitosa');
         connection.release();
     } catch (error) {
-        console.error('❌ Error MySQL:', error.message);
+        console.error('❌ Error MySQL:', error.message || error);
+        // Opcional: imprime el stack completo
+        console.error(error.stack);
     }
 })();
 
