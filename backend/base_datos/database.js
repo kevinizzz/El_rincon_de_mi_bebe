@@ -20,9 +20,12 @@ const pool = mysql.createPool({
         console.log('✅ Conexión MySQL exitosa');
         connection.release();
     } catch (error) {
-        console.error('❌ Error MySQL:', error.message || error);
-        // Opcional: imprime el stack completo
-        console.error(error.stack);
+        console.error('❌ Error MySQL (detalles):', {
+            message: error.message,
+            code: error.code,
+            sqlMessage: error.sqlMessage,
+            stack: error.stack
+        });
     }
 })();
 
