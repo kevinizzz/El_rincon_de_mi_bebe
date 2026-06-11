@@ -1,6 +1,6 @@
 // catalogo.js
 document.addEventListener('DOMContentLoaded', async () => {
-const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
+    const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
     // Leer parámetros de la URL al cargar
     const urlParams = new URLSearchParams(window.location.search);
@@ -45,10 +45,10 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         window.history.pushState({}, '', newUrl);
     }
 
-    // ========== CARGAR CATEGORÍAS ==========
+    // ========== CARGAR CATEGORÍAS (CORREGIDO: usa /api/categoria) ==========
     async function loadCategorias() {
         try {
-            const res = await fetch(`${API_BASE}/categorias`);
+            const res = await fetch(`${API_BASE}/categoria`); // ← corregido
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const cats = await res.json();
             if (!cats.length) {
@@ -76,7 +76,7 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         }
     }
 
-    // ========== CARGAR PRODUCTOS ==========
+    // ========== CARGAR PRODUCTOS (maneja paginación del backend) ==========
     async function loadProducts() {
         try {
             const params = new URLSearchParams();
@@ -93,13 +93,17 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
             const data = await res.json();
 
             let productos = [];
-            if (Array.isArray(data)) {
-                productos = data;
-                totalPages = Math.ceil(productos.length / 12);
-            } else if (data.data && Array.isArray(data.data)) {
+            // Si el backend envía { data, totalPages }
+            if (data.data && Array.isArray(data.data)) {
                 productos = data.data;
                 totalPages = data.totalPages || 1;
-            } else {
+            } 
+            // Si el backend envía un array plano (sin paginación)
+            else if (Array.isArray(data)) {
+                productos = data;
+                totalPages = Math.ceil(productos.length / 12);
+            } 
+            else {
                 throw new Error('Formato de respuesta no reconocido');
             }
             renderProducts(productos);
@@ -150,15 +154,13 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
             `;
         }).join('');
 
-        // Asignar evento a los botones "Ver detalles" (para guardar estado antes de ir a detalle)
+        // Evento para botones "Ver detalles" (guardar estado antes de ir a detalle)
         document.querySelectorAll('.boton_producto').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const id = btn.getAttribute('data-id');
                 if (id) {
-                    // Guardar el estado actual de la URL antes de ir a detalle
                     const currentState = window.location.search;
-                    // Usar localStorage para persistir el estado al volver
                     localStorage.setItem('catalogo_return_state', currentState);
                     window.location.href = `detalle.html?id=${id}`;
                 }
@@ -204,7 +206,7 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         });
     }
 
-    // ========== FILTROS Y EVENTOS ==========
+    // ========== FILTROS ==========
     if (sortSelect) {
         sortSelect.value = currentFilters.orden;
         sortSelect.addEventListener('change', () => {
@@ -215,7 +217,6 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         });
     }
 
-    // Aplicar filtro de precio con evento input + al hacer clic fuera
     function applyPriceFilter() {
         currentFilters.minPrice = precioMinInput.value;
         currentFilters.maxPrice = precioMaxInput.value;
@@ -227,17 +228,13 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
     if (precioMinInput && precioMaxInput) {
         precioMinInput.addEventListener('input', applyPriceFilter);
         precioMaxInput.addEventListener('input', applyPriceFilter);
-        // Al hacer clic fuera de los inputs de precio, también aplicar
         document.addEventListener('click', (e) => {
             const dentroPrecio = e.target === precioMinInput || e.target === precioMaxInput ||
                 precioMinInput.contains(e.target) || precioMaxInput.contains(e.target);
-            if (!dentroPrecio) {
-                applyPriceFilter();
-            }
+            if (!dentroPrecio) applyPriceFilter();
         });
     }
 
-    // Toggle de filtros con animación lateral en PC
     if (toggleFiltrosBtn && sidebar) {
         toggleFiltrosBtn.addEventListener('click', () => {
             sidebar.classList.toggle('sidebar_oculto');
@@ -247,7 +244,6 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         });
     }
 
-    // Búsqueda con debounce y actualización de URL
     let debounceTimeout;
     if (searchInput) {
         searchInput.value = currentFilters.busqueda;
@@ -262,14 +258,12 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         });
     }
 
-    // Restaurar estado desde localStorage al cargar (por si se vuelve del detalle)
+    // Restaurar estado desde localStorage
     const storedState = localStorage.getItem('catalogo_return_state');
     if (storedState && !window.location.search) {
-        // Si no hay parámetros en la URL pero hay estado guardado, restaurar
         window.location.search = storedState;
         localStorage.removeItem('catalogo_return_state');
     } else if (storedState && window.location.search !== storedState) {
-        // Si la URL actual es diferente al estado guardado, actualizar
         const params = new URLSearchParams(storedState);
         if (params.get('categoria')) currentFilters.categoria = params.get('categoria');
         if (params.get('orden')) currentFilters.orden = params.get('orden');
@@ -281,9 +275,7 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         localStorage.removeItem('catalogo_return_state');
     }
 
-    // Evento popstate para cuando el usuario navega hacia atrás/adelante
     window.addEventListener('popstate', () => {
-        // Recargar la página para que tome los parámetros de la URL actual
         location.reload();
     });
 

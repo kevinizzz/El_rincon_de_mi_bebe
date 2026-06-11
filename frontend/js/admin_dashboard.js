@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         adminAvatar.textContent = adminData.nombre ? adminData.nombre.charAt(0).toUpperCase() : 'A';
     }
 
-    const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://elrincondemibebe-production.up.railway.app/backend/api';
 
     // Elementos DOM
     const metricsGrid = document.getElementById('metricsGrid');
