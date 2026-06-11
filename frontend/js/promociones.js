@@ -1,6 +1,6 @@
 // promociones.js
 document.addEventListener('DOMContentLoaded', async () => {
-const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
+    const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
     // ========== Crear modal para combos si no existe ==========
     let comboModal = document.getElementById('comboModal');

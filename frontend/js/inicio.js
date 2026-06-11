@@ -1,6 +1,6 @@
 // inicio.js
 document.addEventListener('DOMContentLoaded', async () => {
-const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
+    const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
     // ========== 1. Cargar 6 categorías populares ==========
     async function loadCategoriasPopulares() {
@@ -8,10 +8,10 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         if (!container) return;
 
         try {
-            const res = await fetch(`${API_BASE}/categorias/populares`);
+            // ✅ CORREGIDO: usar /categoria/populares (sin 's')
+            const res = await fetch(`${API_BASE}/categoria/populares`);
             if (!res.ok) throw new Error('Error al cargar categorías populares');
             const cats = await res.json();
-            // Asegurar que solo se muestren 6 (el endpoint ya debe devolver 6)
             const top6 = cats.slice(0, 6);
             container.innerHTML = top6.map(c => `
                 <a href="catalogo.html?categoria=${c.id}" class="tarjeta_categoria">
@@ -24,7 +24,8 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
             console.error('Error cargando categorías populares:', error);
             // Fallback: cargar categorías normales (sin orden especial)
             try {
-                const res = await fetch(`${API_BASE}/categorias`);
+                // ✅ CORREGIDO: usar /categoria (sin 's')
+                const res = await fetch(`${API_BASE}/categoria`);
                 const cats = await res.json();
                 const primeras6 = cats.slice(0, 6);
                 container.innerHTML = primeras6.map(c => `
@@ -96,7 +97,7 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         }
     }
 
-    // ========== 5. Recomendados para ti (basado en últimas interacciones) ==========
+    // ========== 5. Recomendados para ti ==========
     async function loadRecomendados() {
         const container = document.getElementById('recomendadosContainer');
         if (!container) return;
@@ -104,7 +105,6 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         try {
             const session_uuid = localStorage.getItem('session_uuid');
             if (!session_uuid) {
-                // Usuario nuevo: mostrar productos más populares
                 const res = await fetch(`${API_BASE}/productos?orden=popular&limite=4`);
                 const data = await res.json();
                 const productos = data.data || [];
@@ -112,7 +112,6 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
                 return;
             }
 
-            // Obtener últimas 3 categorías visitadas por el usuario
             const interaccionesRes = await fetch(`${API_BASE}/interacciones/ultimas-categorias?session_uuid=${session_uuid}&limite=3`);
             let categoriasIds = [];
             if (interaccionesRes.ok) {
@@ -127,12 +126,10 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
                 );
                 const resultados = await Promise.all(promesas);
                 productosRecomendados = resultados.flatMap(r => r.data || []);
-                // Eliminar duplicados y limitar a 4
                 productosRecomendados = [...new Map(productosRecomendados.map(p => [p.id, p])).values()].slice(0, 4);
             }
 
             if (!productosRecomendados.length) {
-                // Fallback: productos más populares
                 const res = await fetch(`${API_BASE}/productos?orden=popular&limite=4`);
                 const data = await res.json();
                 productosRecomendados = data.data || [];
@@ -145,7 +142,7 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
         }
     }
 
-    // ========== Función reutilizable para renderizar tarjeta de producto ==========
+    // ========== Función reutilizable para tarjeta de producto ==========
     function renderTarjetaProducto(p) {
         const img = p.imagen_principal || 'https://placehold.co/300x300?text=Sin+imagen';
         const tieneDescuento = p.descuento_total && p.descuento_total > 0;

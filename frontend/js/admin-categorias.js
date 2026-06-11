@@ -2,7 +2,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (!sessionStorage.getItem('admin_logged')) window.location.href = 'login.html';
 
-    const API_BASE = 'http://localhost:3000/api';
+    // ✅ URL base corregida (sin /backend)
+    const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
     // Datos completos para filtrar
     let todasCategorias = [];
@@ -33,7 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================== CATEGORÍAS ====================
     async function loadCategorias() {
         try {
-            const response = await fetch(`${API_BASE}/categorias/con-conteo`);
+            // ✅ Endpoint correcto: /categoria/con-conteo (sin 's' final)
+            const response = await fetch(`${API_BASE}/categoria/con-conteo`);
             if (!response.ok) throw new Error('Error al cargar categorías');
             todasCategorias = await response.json();
             renderCategorias(todasCategorias);
@@ -76,7 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================== TEMPORADAS ====================
     async function loadTemporadas() {
         try {
-            const response = await fetch(`${API_BASE}/temporadas/con-conteo`);
+            // ✅ Endpoint correcto: /temporada/con-conteo (sin 's' final)
+            const response = await fetch(`${API_BASE}/temporada/con-conteo`);
             if (!response.ok) throw new Error('Error al cargar temporadas');
             todasTemporadas = await response.json();
             renderTemporadas(todasTemporadas);
@@ -121,7 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
         editingCategoriaId = id;
         if (id) {
             categoriaModalTitle.innerText = 'Editar categoría';
-            fetch(`${API_BASE}/categorias/${id}`)
+            // ✅ Endpoint correcto: /categoria/${id}
+            fetch(`${API_BASE}/categoria/${id}`)
                 .then(res => res.json())
                 .then(cat => { categoriaNombre.value = cat.nombre; })
                 .catch(err => console.error(err));
@@ -146,7 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            let url = `${API_BASE}/categorias`;
+            // ✅ Endpoint correcto: /categoria (sin 's')
+            let url = `${API_BASE}/categoria`;
             let method = 'POST';
             if (editingCategoriaId) {
                 url += `/${editingCategoriaId}`;
@@ -173,7 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function deleteCategoria(id, nombre) {
         if (!confirm(`¿Eliminar la categoría "${nombre}"?`)) return;
         try {
-            const response = await fetch(`${API_BASE}/categorias/${id}`, { method: 'DELETE' });
+            // ✅ Endpoint correcto: /categoria/${id}
+            const response = await fetch(`${API_BASE}/categoria/${id}`, { method: 'DELETE' });
             if (response.ok) {
                 alert('Categoría eliminada');
                 loadCategorias();
@@ -191,7 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
         editingTemporadaId = id;
         if (id) {
             temporadaModalTitle.innerText = 'Editar temporada';
-            fetch(`${API_BASE}/temporadas/${id}`)
+            // ✅ Endpoint correcto: /temporada/${id}
+            fetch(`${API_BASE}/temporada/${id}`)
                 .then(res => res.json())
                 .then(temp => { temporadaNombre.value = temp.nombre; })
                 .catch(err => console.error(err));
@@ -216,7 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            let url = `${API_BASE}/temporadas`;
+            // ✅ Endpoint correcto: /temporada (sin 's')
+            let url = `${API_BASE}/temporada`;
             let method = 'POST';
             if (editingTemporadaId) {
                 url += `/${editingTemporadaId}`;
@@ -243,7 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function deleteTemporada(id, nombre) {
         if (!confirm(`¿Eliminar la temporada "${nombre}"?`)) return;
         try {
-            const response = await fetch(`${API_BASE}/temporadas/${id}`, { method: 'DELETE' });
+            // ✅ Endpoint correcto: /temporada/${id}
+            const response = await fetch(`${API_BASE}/temporada/${id}`, { method: 'DELETE' });
             if (response.ok) {
                 alert('Temporada eliminada');
                 loadTemporadas();
@@ -316,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function escapeHtml(str) {
-        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
     }
 
     // Inicializar

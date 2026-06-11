@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (!sessionStorage.getItem('admin_logged')) window.location.href = 'login.html';
 
-const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
+    const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
     const IMGBB_API_KEY = 'e583e786cd21089f399a5d150447152e';
     const IMGBB_UPLOAD_URL = 'https://api.imgbb.com/1/upload';
 
@@ -61,7 +61,8 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
     // ==================== CARGAR CATEGORÍAS Y TEMPORADAS ====================
     async function loadCategorias() {
         try {
-            const res = await fetch(`${API_BASE}/categorias`);
+            // ✅ CORREGIDO: usar /categoria (sin 's')
+            const res = await fetch(`${API_BASE}/categoria`);
             const cats = await res.json();
             if (modalCategoria) {
                 modalCategoria.innerHTML = '<option value="">Seleccionar</option>';
@@ -82,7 +83,8 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
     async function loadTemporadas() {
         try {
-            const res = await fetch(`${API_BASE}/temporadas`);
+            // ✅ CORREGIDO: usar /temporada (sin 's')
+            const res = await fetch(`${API_BASE}/temporada`);
             const temps = await res.json();
             if (modalTemporada) {
                 modalTemporada.innerHTML = '<option value="">Sin temporada</option>';

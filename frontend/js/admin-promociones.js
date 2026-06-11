@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    const API_BASE = 'http://localhost:3000/api';
+    const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
     let promocionesNormales = [];
     let combos = [];
     let currentEdit = null;
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         modal.style.display = 'flex';
     }
 
-    // Cargar selectores (productos y categorías)
+    // Cargar selectores (productos y categorías) – RUTAS CORREGIDAS
     async function cargarSelectores() {
         try {
             const resProd = await fetch(`${API_BASE}/productos?limite=1000`);
@@ -92,7 +92,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             window.listaProductos = productos;
 
-            const resCat = await fetch(`${API_BASE}/categorias`);
+            // ✅ CORREGIDO: /categoria (sin 's')
+            const resCat = await fetch(`${API_BASE}/categoria`);
             const categorias = await resCat.json();
             const selectCategoria = document.getElementById('catCategoria');
             if (selectCategoria) {
