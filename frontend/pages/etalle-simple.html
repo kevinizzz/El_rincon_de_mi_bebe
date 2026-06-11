@@ -8,7 +8,7 @@
     if (!id) {
       document.getElementById('info').innerHTML = 'No se especificó ID de producto';
     } else {
-      fetch(`http://localhost:3000/api/productos/${id}`)
+      fetch(`${API_URL}/api/categoria`)
         .then(r => r.json())
         .then(data => {
           // La respuesta es directamente el objeto producto
