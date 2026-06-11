@@ -1,11 +1,14 @@
-const db = require('./base_datos/database');
-
-async function test() {
+app.get('/test-db', async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT 1+1 as result');
-        console.log('✅ Conexión exitosa:', rows);
+        res.json({
+            DB_HOST: process.env.DB_HOST,
+            DB_USER: process.env.DB_USER,
+            DB_NAME: process.env.DB_NAME,
+            DB_PORT: process.env.DB_PORT
+        });
     } catch (error) {
-        console.error('❌ Error:', error.message);
+        res.status(500).json({
+            error: error.message
+        });
     }
-}
-test();
+});
