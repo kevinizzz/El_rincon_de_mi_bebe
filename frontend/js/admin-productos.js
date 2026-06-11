@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewSecundarias = document.getElementById('previewSecundarias');
     const modalActivo = document.getElementById('modalActivo');
     const modalDestacado = document.getElementById('modalDestacado');
-    // Para tallas usamos .tallas-grid (clase corregida en HTML)
     const tallasCheckboxes = document.querySelectorAll('.tallas-grid input[type="checkbox"]');
 
     const productsGrid = document.getElementById('productsGrid');
@@ -61,8 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================== CARGAR CATEGORÍAS Y TEMPORADAS ====================
     async function loadCategorias() {
         try {
-            // ✅ CORREGIDO: usar /categoria (sin 's')
-            const res = await fetch(`${API_BASE}/categoria`);
+            const res = await fetch(`${API_BASE}/categoria`); // CORREGIDO: sin 's'
             const cats = await res.json();
             if (modalCategoria) {
                 modalCategoria.innerHTML = '<option value="">Seleccionar</option>';
@@ -83,8 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadTemporadas() {
         try {
-            // ✅ CORREGIDO: usar /temporada (sin 's')
-            const res = await fetch(`${API_BASE}/temporada`);
+            const res = await fetch(`${API_BASE}/temporada`); // CORREGIDO: sin 's'
             const temps = await res.json();
             if (modalTemporada) {
                 modalTemporada.innerHTML = '<option value="">Sin temporada</option>';
@@ -350,120 +347,122 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
-
-
-
-async function openViewModal(productId) {
-    try {
-        const response = await fetch(`${API_BASE}/productos/${productId}`);
-        if (!response.ok) throw new Error('Error al cargar producto');
-        const product = await response.json();
-
-        // Obtener combos del producto
-        let combosHtml = '';
+    // ==================== MODAL VER PRODUCTO ====================
+    async function openViewModal(productId) {
         try {
-            const resCombos = await fetch(`${API_BASE}/productos/${productId}/combos`);
-            if (resCombos.ok) {
-                const combos = await resCombos.json();
-                if (combos.length > 0) {
-                    combosHtml = `
-                        <div class="modal-combos">
-                            <strong>🧩 Combos activos:</strong>
-                            <div class="combos-list">
-                                ${combos.map(c => `<span class="combo-tag">${escapeHtml(c.titulo)} (${c.descuento}% OFF)</span>`).join('')}
+            const response = await fetch(`${API_BASE}/productos/${productId}`);
+            if (!response.ok) throw new Error('Error al cargar producto');
+            const product = await response.json();
+
+            // Obtener combos del producto
+            let combosHtml = '';
+            try {
+                const resCombos = await fetch(`${API_BASE}/productos/${productId}/combos`);
+                if (resCombos.ok) {
+                    const combos = await resCombos.json();
+                    if (combos.length > 0) {
+                        combosHtml = `
+                            <div class="modal-combos">
+                                <strong>🧩 Combos activos:</strong>
+                                <div class="combos-list">
+                                    ${combos.map(c => `<span class="combo-tag">${escapeHtml(c.titulo)} (${c.descuento}% OFF)</span>`).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (e) { console.warn('Error cargando combos:', e); }
+
+            // Galería de 4 fotos (sin relleno)
+            const todasFotos = [];
+            if (product.imagen_principal) todasFotos.push(product.imagen_principal);
+            if (product.fotos && product.fotos.length) {
+                todasFotos.push(...product.fotos); // exactamente las que tiene
+            }
+            const fotosHtml = todasFotos.map((url, idx) => `
+                <div class="modal-foto-item" data-img="${url}">
+                    <img src="${url}" alt="Foto ${idx+1}">
+                </div>
+            `).join('');
+
+            // Estrellas
+            const rating = product.rating_promedio || 0;
+            const totalRatings = product.rating_total || 0;
+            let estrellasHtml = '';
+            if (totalRatings > 0) {
+                const estrellaLlena = '<i class="fas fa-star"></i>';
+                const estrellaMedia = '<i class="fas fa-star-half-alt"></i>';
+                const estrellaVacia = '<i class="far fa-star"></i>';
+                let stars = '';
+                const entero = Math.floor(rating);
+                const decimal = rating - entero;
+                for (let i = 0; i < entero; i++) stars += estrellaLlena;
+                if (decimal >= 0.5) stars += estrellaMedia;
+                for (let i = 0; i < 5 - Math.ceil(rating); i++) stars += estrellaVacia;
+                estrellasHtml = `<div class="modal-rating"><div class="stars">${stars}</div><span>${totalRatings} opiniones</span></div>`;
+            } else {
+                estrellasHtml = `<div class="modal-rating"><span>Sin opiniones</span></div>`;
+            }
+
+            const tieneDescuento = product.descuento_total > 0;
+            const precioHtml = tieneDescuento ? `
+                <div class="modal-price">
+                    <span class="old-price">C$ ${parseFloat(product.precio).toFixed(2)}</span>
+                    <span class="discount-price">C$ ${product.precio_con_descuento}</span>
+                    <span class="discount-badge">-${product.descuento_total}%</span>
+                </div>
+            ` : `<div class="modal-price">C$ ${parseFloat(product.precio).toFixed(2)}</div>`;
+
+            const tallasHtml = product.tallas ? `<div class="modal-tallas"><strong>Tallas:</strong> ${escapeHtml(product.tallas.split(',').join(', '))}</div>` : '';
+
+            const viewBody = document.getElementById('viewProductBody');
+            if (viewBody) {
+                viewBody.innerHTML = `
+                    <div class="modal-product-container">
+                        <div class="modal-gallery" style="grid-template-columns: repeat(${Math.min(todasFotos.length, 2)}, 1fr);">
+                            ${fotosHtml}
+                        </div>
+                        <div class="modal-info">
+                            <h2>${escapeHtml(product.nombre)}</h2>
+                            <p class="modal-category">${escapeHtml(product.categoria_nombre || 'Sin categoría')}</p>
+                            ${estrellasHtml}
+                            ${precioHtml}
+                            <p class="modal-description">${escapeHtml(product.descripcion || 'Sin descripción')}</p>
+                            ${tallasHtml}
+                            ${combosHtml}
+                            <div class="modal-meta">
+                                <span><i class="fas fa-eye"></i> ${product.visitas || 0}</span>
+                                <span><i class="fas fa-heart"></i> ${product.favoritos || 0}</span>
+                                <span><i class="fas fa-calendar-alt"></i> ${new Date(product.fecha_publicacion).toLocaleDateString()}</span>
+                            </div>
+                            <div class="modal-status">
+                                <span class="status-badge ${product.activo ? 'active' : 'inactive'}">${product.activo ? 'Activo' : 'Oculto'}</span>
+                                ${product.destacado ? '<span class="status-badge featured">Destacado</span>' : ''}
                             </div>
                         </div>
-                    `;
-                }
+                    </div>
+                `;
             }
-        } catch (e) { console.warn('Error cargando combos:', e); }
 
-        // === CORRECCIÓN: Galería con exactamente las fotos que tiene (sin relleno) ===
-        const todasFotos = [];
-        if (product.imagen_principal) todasFotos.push(product.imagen_principal);
-        if (product.fotos && product.fotos.length) {
-            todasFotos.push(...product.fotos); // sin limitar a 3
-        }
-        // No se añaden fotos de relleno: si hay 1, se muestra 1; si hay 2, se muestran 2; etc.
-        const fotosHtml = todasFotos.map((url, idx) => `
-            <div class="modal-foto-item" data-img="${url}">
-                <img src="${url}" alt="Foto ${idx+1}">
-            </div>
-        `).join('');
-
-        // Estrellas
-        const rating = product.rating_promedio || 0;
-        const totalRatings = product.rating_total || 0;
-        let estrellasHtml = '';
-        if (totalRatings > 0) {
-            const estrellaLlena = '<i class="fas fa-star"></i>';
-            const estrellaMedia = '<i class="fas fa-star-half-alt"></i>';
-            const estrellaVacia = '<i class="far fa-star"></i>';
-            let stars = '';
-            const entero = Math.floor(rating);
-            const decimal = rating - entero;
-            for (let i = 0; i < entero; i++) stars += estrellaLlena;
-            if (decimal >= 0.5) stars += estrellaMedia;
-            for (let i = 0; i < 5 - Math.ceil(rating); i++) stars += estrellaVacia;
-            estrellasHtml = `<div class="modal-rating"><div class="stars">${stars}</div><span>${totalRatings} opiniones</span></div>`;
-        } else {
-            estrellasHtml = `<div class="modal-rating"><span>Sin opiniones</span></div>`;
-        }
-
-        const tieneDescuento = product.descuento_total > 0;
-        const precioHtml = tieneDescuento ? `
-            <div class="modal-price">
-                <span class="old-price">C$ ${parseFloat(product.precio).toFixed(2)}</span>
-                <span class="discount-price">C$ ${product.precio_con_descuento}</span>
-                <span class="discount-badge">-${product.descuento_total}%</span>
-            </div>
-        ` : `<div class="modal-price">C$ ${parseFloat(product.precio).toFixed(2)}</div>`;
-
-        const tallasHtml = product.tallas ? `<div class="modal-tallas"><strong>Tallas:</strong> ${escapeHtml(product.tallas.split(',').join(', '))}</div>` : '';
-
-        const viewBody = document.getElementById('viewProductBody');
-        if (viewBody) {
-            viewBody.innerHTML = `
-                <div class="modal-product-container">
-                    <div class="modal-gallery" style="grid-template-columns: repeat(${Math.min(todasFotos.length, 2)}, 1fr);">
-                        ${fotosHtml}
-                    </div>
-                    <div class="modal-info">
-                        <h2>${escapeHtml(product.nombre)}</h2>
-                        <p class="modal-category">${escapeHtml(product.categoria_nombre || 'Sin categoría')}</p>
-                        ${estrellasHtml}
-                        ${precioHtml}
-                        <p class="modal-description">${escapeHtml(product.descripcion || 'Sin descripción')}</p>
-                        ${tallasHtml}
-                        ${combosHtml}
-                        <div class="modal-meta">
-                            <span><i class="fas fa-eye"></i> ${product.visitas || 0}</span>
-                            <span><i class="fas fa-heart"></i> ${product.favoritos || 0}</span>
-                            <span><i class="fas fa-calendar-alt"></i> ${new Date(product.fecha_publicacion).toLocaleDateString()}</span>
-                        </div>
-                        <div class="modal-status">
-                            <span class="status-badge ${product.activo ? 'active' : 'inactive'}">${product.activo ? 'Activo' : 'Oculto'}</span>
-                            ${product.destacado ? '<span class="status-badge featured">Destacado</span>' : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        document.querySelectorAll('.modal-foto-item').forEach(foto => {
-            foto.addEventListener('click', () => {
-                window.open(foto.dataset.img, '_blank');
+            document.querySelectorAll('.modal-foto-item').forEach(foto => {
+                foto.addEventListener('click', () => {
+                    window.open(foto.dataset.img, '_blank');
+                });
             });
-        });
 
-        const viewModal = document.getElementById('viewProductModal');
-        if (viewModal) viewModal.style.display = 'flex';
-    } catch (error) {
-        console.error(error);
-        alert('Error al cargar los detalles del producto');
+            const viewModal = document.getElementById('viewProductModal');
+            if (viewModal) viewModal.style.display = 'flex';
+        } catch (error) {
+            console.error(error);
+            alert('Error al cargar los detalles del producto');
+        }
     }
-}
+
+    // ========== FUNCIONES PARA CERRAR EL MODAL DE DETALLE (CORREGIDO) ==========
+    function closeViewModal() {
+        const viewModal = document.getElementById('viewProductModal');
+        if (viewModal) viewModal.style.display = 'none';
+    }
 
     // ==================== ACCIONES ====================
     async function handleProductActions(e) {
@@ -519,6 +518,7 @@ async function openViewModal(productId) {
     if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
     if (formModal) formModal.addEventListener('submit', saveProduct);
 
+    // Eventos para cerrar el modal de detalle
     const closeViewModalBtn = document.getElementById('closeViewModalBtn');
     const closeViewModalBtns = document.querySelectorAll('.close-view-modal');
     if (closeViewModalBtn) closeViewModalBtn.addEventListener('click', closeViewModal);
@@ -568,7 +568,7 @@ async function openViewModal(productId) {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('admin_logged');
-            window.location.href = 'login.html';
+            window.location.href = '../index.html'; // redirige a inicio (fuera de pages/)
         });
     }
 
