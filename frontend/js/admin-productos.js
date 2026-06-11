@@ -350,121 +350,120 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==================== MODAL VER PRODUCTO ====================
-    async function openViewModal(productId) {
+
+
+
+
+async function openViewModal(productId) {
+    try {
+        const response = await fetch(`${API_BASE}/productos/${productId}`);
+        if (!response.ok) throw new Error('Error al cargar producto');
+        const product = await response.json();
+
+        // Obtener combos del producto
+        let combosHtml = '';
         try {
-            const response = await fetch(`${API_BASE}/productos/${productId}`);
-            if (!response.ok) throw new Error('Error al cargar producto');
-            const product = await response.json();
-
-            // Obtener combos del producto
-            let combosHtml = '';
-            try {
-                const resCombos = await fetch(`${API_BASE}/productos/${productId}/combos`);
-                if (resCombos.ok) {
-                    const combos = await resCombos.json();
-                    if (combos.length > 0) {
-                        combosHtml = `
-                            <div class="modal-combos">
-                                <strong>🧩 Combos activos:</strong>
-                                <div class="combos-list">
-                                    ${combos.map(c => `<span class="combo-tag">${escapeHtml(c.titulo)} (${c.descuento}% OFF)</span>`).join('')}
-                                </div>
+            const resCombos = await fetch(`${API_BASE}/productos/${productId}/combos`);
+            if (resCombos.ok) {
+                const combos = await resCombos.json();
+                if (combos.length > 0) {
+                    combosHtml = `
+                        <div class="modal-combos">
+                            <strong>🧩 Combos activos:</strong>
+                            <div class="combos-list">
+                                ${combos.map(c => `<span class="combo-tag">${escapeHtml(c.titulo)} (${c.descuento}% OFF)</span>`).join('')}
                             </div>
-                        `;
-                    }
-                }
-            } catch (e) { console.warn('Error cargando combos:', e); }
-
-            // Galería de 4 fotos
-            const todasFotos = [];
-            if (product.imagen_principal) todasFotos.push(product.imagen_principal);
-            if (product.fotos && product.fotos.length) todasFotos.push(...product.fotos.slice(0, 3));
-            while (todasFotos.length < 4) todasFotos.push(todasFotos[0] || 'https://placehold.co/400x400?text=Sin+imagen');
-
-            const fotosHtml = todasFotos.map((url, idx) => `
-                <div class="modal-foto-item" data-img="${url}">
-                    <img src="${url}" alt="Foto ${idx+1}">
-                </div>
-            `).join('');
-
-            // Estrellas
-            const rating = product.rating_promedio || 0;
-            const totalRatings = product.rating_total || 0;
-            let estrellasHtml = '';
-            if (totalRatings > 0) {
-                const estrellaLlena = '<i class="fas fa-star"></i>';
-                const estrellaMedia = '<i class="fas fa-star-half-alt"></i>';
-                const estrellaVacia = '<i class="far fa-star"></i>';
-                let stars = '';
-                const entero = Math.floor(rating);
-                const decimal = rating - entero;
-                for (let i = 0; i < entero; i++) stars += estrellaLlena;
-                if (decimal >= 0.5) stars += estrellaMedia;
-                for (let i = 0; i < 5 - Math.ceil(rating); i++) stars += estrellaVacia;
-                estrellasHtml = `<div class="modal-rating"><div class="stars">${stars}</div><span>${totalRatings} opiniones</span></div>`;
-            } else {
-                estrellasHtml = `<div class="modal-rating"><span>Sin opiniones</span></div>`;
-            }
-
-            const tieneDescuento = product.descuento_total > 0;
-            const precioHtml = tieneDescuento ? `
-                <div class="modal-price">
-                    <span class="old-price">C$ ${parseFloat(product.precio).toFixed(2)}</span>
-                    <span class="discount-price">C$ ${product.precio_con_descuento}</span>
-                    <span class="discount-badge">-${product.descuento_total}%</span>
-                </div>
-            ` : `<div class="modal-price">C$ ${parseFloat(product.precio).toFixed(2)}</div>`;
-
-            const tallasHtml = product.tallas ? `<div class="modal-tallas"><strong>Tallas:</strong> ${escapeHtml(product.tallas.split(',').join(', '))}</div>` : '';
-
-            const viewBody = document.getElementById('viewProductBody');
-            if (viewBody) {
-                viewBody.innerHTML = `
-                    <div class="modal-product-container">
-                        <div class="modal-gallery">
-                            ${fotosHtml}
                         </div>
-                        <div class="modal-info">
-                            <h2>${escapeHtml(product.nombre)}</h2>
-                            <p class="modal-category">${escapeHtml(product.categoria_nombre || 'Sin categoría')}</p>
-                            ${estrellasHtml}
-                            ${precioHtml}
-                            <p class="modal-description">${escapeHtml(product.descripcion || 'Sin descripción')}</p>
-                            ${tallasHtml}
-                            ${combosHtml}
-                            <div class="modal-meta">
-                                <span><i class="fas fa-eye"></i> ${product.visitas || 0}</span>
-                                <span><i class="fas fa-heart"></i> ${product.favoritos || 0}</span>
-                                <span><i class="fas fa-calendar-alt"></i> ${new Date(product.fecha_publicacion).toLocaleDateString()}</span>
-                            </div>
-                            <div class="modal-status">
-                                <span class="status-badge ${product.activo ? 'active' : 'inactive'}">${product.activo ? 'Activo' : 'Oculto'}</span>
-                                ${product.destacado ? '<span class="status-badge featured">Destacado</span>' : ''}
-                            </div>
+                    `;
+                }
+            }
+        } catch (e) { console.warn('Error cargando combos:', e); }
+
+        // === CORRECCIÓN: Galería con exactamente las fotos que tiene (sin relleno) ===
+        const todasFotos = [];
+        if (product.imagen_principal) todasFotos.push(product.imagen_principal);
+        if (product.fotos && product.fotos.length) {
+            todasFotos.push(...product.fotos); // sin limitar a 3
+        }
+        // No se añaden fotos de relleno: si hay 1, se muestra 1; si hay 2, se muestran 2; etc.
+        const fotosHtml = todasFotos.map((url, idx) => `
+            <div class="modal-foto-item" data-img="${url}">
+                <img src="${url}" alt="Foto ${idx+1}">
+            </div>
+        `).join('');
+
+        // Estrellas
+        const rating = product.rating_promedio || 0;
+        const totalRatings = product.rating_total || 0;
+        let estrellasHtml = '';
+        if (totalRatings > 0) {
+            const estrellaLlena = '<i class="fas fa-star"></i>';
+            const estrellaMedia = '<i class="fas fa-star-half-alt"></i>';
+            const estrellaVacia = '<i class="far fa-star"></i>';
+            let stars = '';
+            const entero = Math.floor(rating);
+            const decimal = rating - entero;
+            for (let i = 0; i < entero; i++) stars += estrellaLlena;
+            if (decimal >= 0.5) stars += estrellaMedia;
+            for (let i = 0; i < 5 - Math.ceil(rating); i++) stars += estrellaVacia;
+            estrellasHtml = `<div class="modal-rating"><div class="stars">${stars}</div><span>${totalRatings} opiniones</span></div>`;
+        } else {
+            estrellasHtml = `<div class="modal-rating"><span>Sin opiniones</span></div>`;
+        }
+
+        const tieneDescuento = product.descuento_total > 0;
+        const precioHtml = tieneDescuento ? `
+            <div class="modal-price">
+                <span class="old-price">C$ ${parseFloat(product.precio).toFixed(2)}</span>
+                <span class="discount-price">C$ ${product.precio_con_descuento}</span>
+                <span class="discount-badge">-${product.descuento_total}%</span>
+            </div>
+        ` : `<div class="modal-price">C$ ${parseFloat(product.precio).toFixed(2)}</div>`;
+
+        const tallasHtml = product.tallas ? `<div class="modal-tallas"><strong>Tallas:</strong> ${escapeHtml(product.tallas.split(',').join(', '))}</div>` : '';
+
+        const viewBody = document.getElementById('viewProductBody');
+        if (viewBody) {
+            viewBody.innerHTML = `
+                <div class="modal-product-container">
+                    <div class="modal-gallery" style="grid-template-columns: repeat(${Math.min(todasFotos.length, 2)}, 1fr);">
+                        ${fotosHtml}
+                    </div>
+                    <div class="modal-info">
+                        <h2>${escapeHtml(product.nombre)}</h2>
+                        <p class="modal-category">${escapeHtml(product.categoria_nombre || 'Sin categoría')}</p>
+                        ${estrellasHtml}
+                        ${precioHtml}
+                        <p class="modal-description">${escapeHtml(product.descripcion || 'Sin descripción')}</p>
+                        ${tallasHtml}
+                        ${combosHtml}
+                        <div class="modal-meta">
+                            <span><i class="fas fa-eye"></i> ${product.visitas || 0}</span>
+                            <span><i class="fas fa-heart"></i> ${product.favoritos || 0}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${new Date(product.fecha_publicacion).toLocaleDateString()}</span>
+                        </div>
+                        <div class="modal-status">
+                            <span class="status-badge ${product.activo ? 'active' : 'inactive'}">${product.activo ? 'Activo' : 'Oculto'}</span>
+                            ${product.destacado ? '<span class="status-badge featured">Destacado</span>' : ''}
                         </div>
                     </div>
-                `;
-            }
-
-            document.querySelectorAll('.modal-foto-item').forEach(foto => {
-                foto.addEventListener('click', () => {
-                    window.open(foto.dataset.img, '_blank');
-                });
-            });
-
-            const viewModal = document.getElementById('viewProductModal');
-            if (viewModal) viewModal.style.display = 'flex';
-        } catch (error) {
-            console.error(error);
-            alert('Error al cargar los detalles del producto');
+                </div>
+            `;
         }
-    }
 
-    function closeViewModal() {
+        document.querySelectorAll('.modal-foto-item').forEach(foto => {
+            foto.addEventListener('click', () => {
+                window.open(foto.dataset.img, '_blank');
+            });
+        });
+
         const viewModal = document.getElementById('viewProductModal');
-        if (viewModal) viewModal.style.display = 'none';
+        if (viewModal) viewModal.style.display = 'flex';
+    } catch (error) {
+        console.error(error);
+        alert('Error al cargar los detalles del producto');
     }
+}
 
     // ==================== ACCIONES ====================
     async function handleProductActions(e) {

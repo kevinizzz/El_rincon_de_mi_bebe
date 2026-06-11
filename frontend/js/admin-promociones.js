@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         modal.style.display = 'flex';
     }
 
-    // Cargar selectores (productos y categorías) – RUTAS CORREGIDAS
+    // Cargar selectores (productos y categorías)
     async function cargarSelectores() {
         try {
             const resProd = await fetch(`${API_BASE}/productos?limite=1000`);
@@ -92,7 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             window.listaProductos = productos;
 
-            // ✅ CORREGIDO: /categoria (sin 's')
             const resCat = await fetch(`${API_BASE}/categoria`);
             const categorias = await resCat.json();
             const selectCategoria = document.getElementById('catCategoria');
@@ -158,6 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        // ██████████ BOTONES SIN ICONOS ██████████
         promoGrid.innerHTML = filtradas.map(item => `
             <div class="promo-card" data-id="${item.id_original}" data-tipo="${item.tipo}" data-entidad="${item.entidad}">
                 <div class="promo-tipo ${item.tipo}">${item.tipo === 'producto' ? 'Producto' : (item.tipo === 'categoria' ? 'Categoría' : 'Combo')}</div>
@@ -167,9 +167,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="promo-fechas">${formatDate(item.fecha_inicio)} → ${formatDate(item.fecha_fin)}</div>
                 <div class="promo-status">${item.activa ? 'Activa' : 'Inactiva'}</div>
                 <div class="promo-actions">
-                    <button class="btn-edit" data-id="${item.id_original}" data-tipo="${item.tipo}" data-entidad="${item.entidad}">✏️ Editar</button>
-                    <button class="btn-delete" data-id="${item.id_original}" data-tipo="${item.tipo}" data-entidad="${item.entidad}">🗑️ Eliminar</button>
-                    <button class="btn-toggle" data-id="${item.id_original}" data-tipo="${item.tipo}" data-entidad="${item.entidad}">🔄 ${item.activa ? 'Desactivar' : 'Activar'}</button>
+                    <button class="btn-edit" data-id="${item.id_original}" data-tipo="${item.tipo}" data-entidad="${item.entidad}">Editar</button>
+                    <button class="btn-delete" data-id="${item.id_original}" data-tipo="${item.tipo}" data-entidad="${item.entidad}">Eliminar</button>
+                    <button class="btn-toggle" data-id="${item.id_original}" data-tipo="${item.tipo}" data-entidad="${item.entidad}">${item.activa ? 'Desactivar' : 'Activar'}</button>
                 </div>
             </div>
         `).join('');

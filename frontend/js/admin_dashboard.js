@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         adminAvatar.textContent = adminData.nombre ? adminData.nombre.charAt(0).toUpperCase() : 'A';
     }
 
-    // ✅ CORREGIDO: eliminar '/backend' de la URL
     const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
     // Elementos DOM
@@ -121,7 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Productos
             const productosRes = await fetch(`${API_BASE}/productos?limite=10000`);
             const productosData = await productosRes.json();
-            // Robustez: si es array plano, convertimos a {data}
             let productos = [];
             if (Array.isArray(productosData)) {
                 productos = productosData;
@@ -136,18 +134,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Promociones activas y nuevas este mes
             const promosRes = await fetch(`${API_BASE}/promociones?activa=1`);
             let promosActivas = [];
-            if (promosRes.ok) {
-                promosActivas = await promosRes.json();
-            }
+            if (promosRes.ok) promosActivas = await promosRes.json();
             const totalPromos = promosActivas.length;
             const nuevasPromos = promosActivas.filter(p => new Date(p.fecha_inicio) >= haceUnMes).length;
 
-            // Visitas hoy y este mes (desde interacciones)
-            const hoy = new Date().toISOString().split('T')[0];
-            let visitasHoy = 0, visitasMes = 0;
+            // ===== NUEVO: Visitas hoy = sesiones de hoy =====
+            let visitasHoy = 0;
             try {
-                const visitasHoyRes = await fetch(`${API_BASE}/interacciones/contar?tipo=ver_producto&fecha=${hoy}`);
-                if (visitasHoyRes.ok) visitasHoy = (await visitasHoyRes.json()).total || 0;
+                const sesionesHoyRes = await fetch(`${API_BASE}/sesiones/por-dia?dias=1`);
+                if (sesionesHoyRes.ok) {
+                    const data = await sesionesHoyRes.json();
+                    if (data && data.length > 0) {
+                        visitasHoy = data[0].total || 0;
+                    }
+                }
+            } catch(e) { console.warn(e); }
+
+            // Visitas este mes (desde interacciones, o también podrías usar sesiones)
+            let visitasMes = 0;
+            try {
                 const desde = haceUnMes.toISOString().split('T')[0];
                 const visitasMesRes = await fetch(`${API_BASE}/interacciones/contar?tipo=ver_producto&desde=${desde}`);
                 if (visitasMesRes.ok) visitasMes = (await visitasMesRes.json()).total || 0;
@@ -185,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div class="metric-icon"><i class="fas fa-eye"></i></div>
                         <div class="metric-info">
                             <h3>${visitasHoy.toLocaleString()}</h3>
-                            <p>Visitas hoy</p>
+                            <p>Visitas hoy (sesiones)</p>
                             <span class="trend up">${visitasMes > 0 ? '+' + Math.round((visitasHoy / (visitasMes/30))*100) : 0}% vs promedio</span>
                         </div>
                     </div>
