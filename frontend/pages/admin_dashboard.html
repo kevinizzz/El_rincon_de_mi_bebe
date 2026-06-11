@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="../css/styleadmin_dashboard.css">
 </head>
 <body>
+    <script>
+        if (!sessionStorage.getItem('admin_logged')) {
+            window.location.href = 'login.html';
+        }
+    </script>
 
 <div class="admin-wrapper">
     <aside class="sidebar" id="sidebar">
@@ -40,12 +45,15 @@
             </div>
             <div class="header-actions">
                 <i class="fas fa-bell"></i>
-                <div class="admin-avatar">A</div>
+                <div class="admin-avatar" id="adminAvatar">A</div>
             </div>
         </header>
 
         <div id="dashboardSection" class="dashboard-section active-section">
+            <!-- Grid de métricas -->
             <div class="metrics-grid" id="metricsGrid"></div>
+
+            <!-- Gráficos principales -->
             <div class="analytics-grid">
                 <div class="chart-card">
                     <div class="card-header">
@@ -65,12 +73,22 @@
                         <canvas id="topViewedChart"></canvas>
                     </div>
                 </div>
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3>Productos más favoritos</h3>
+                        <div class="legend"><span class="legend-dot"></span> Favoritos</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="favoritesChart"></canvas>
+                    </div>
+                </div>
             </div>
+
+            <!-- Lista de productos populares y actividad reciente -->
             <div class="bottom-grid">
                 <div class="popular-products-card">
                     <div class="card-header">
                         <h3>Productos populares</h3>
-                        <i class="fas fa-ellipsis-h"></i>
                     </div>
                     <div class="popular-list" id="popularList"></div>
                 </div>
@@ -81,6 +99,11 @@
                     </div>
                     <div class="activity-timeline" id="activityTimeline"></div>
                 </div>
+            </div>
+
+            <!-- Pie de última actualización -->
+            <div class="last-update">
+                Última actualización: <span id="lastUpdateTime">--:--</span>
             </div>
         </div>
     </main>

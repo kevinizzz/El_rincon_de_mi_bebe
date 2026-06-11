@@ -2,6 +2,26 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
+
+// Contar interacciones
+router.get('/contar', async (req, res) => {
+    try {
+        const { tipo, fecha, desde } = req.query;
+        let sql = `SELECT COUNT(*) AS total FROM interacciones WHERE 1=1`;
+        const params = [];
+        if (tipo) { sql += ' AND tipo_interaccion = ?'; params.push(tipo); }
+        if (fecha) { sql += ' AND DATE(fecha_interaccion) = ?'; params.push(fecha); }
+        if (desde) { sql += ' AND fecha_interaccion >= ?'; params.push(desde); }
+        const [rows] = await db.query(sql, params);
+        res.json({ total: rows[0].total });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: error.message
+        });
+    }
+});
+
 // Registrar interacción
 router.post('/registrar', async (req, res) => {
     try {
@@ -91,12 +111,13 @@ router.get('/ultimas-categorias', async (req, res) => {
         const { session_uuid, limite = 3 } = req.query;
         if (!session_uuid) return res.status(400).json({ error: 'session_uuid requerido' });
         const [rows] = await db.query(`
-            SELECT DISTINCT p.categoria_id 
+            SELECT p.categoria_id
             FROM interacciones i
             JOIN sesiones s ON i.session_id = s.id
             JOIN productos p ON i.producto_id = p.id
             WHERE s.session_uuid = ? AND p.categoria_id IS NOT NULL
-            ORDER BY i.fecha_interaccion DESC
+            GROUP BY p.categoria_id
+            ORDER BY MAX(i.fecha_interaccion) DESC
             LIMIT ?
         `, [session_uuid, parseInt(limite)]);
         res.json(rows);
@@ -129,5 +150,33 @@ function obtenerIconoInteraccion(tipo) {
     };
     return iconos[tipo] || 'fas fa-bell';
 }
+
+
+// Contar interacciones por tipo y fecha (para dashboard)
+router.get('/contar', async (req, res) => {
+    try {
+        const { tipo, fecha, desde } = req.query;
+        let sql = 'SELECT COUNT(*) AS total FROM interacciones WHERE 1=1';
+        const params = [];
+        if (tipo) {
+            sql += ' AND tipo_interaccion = ?';
+            params.push(tipo);
+        }
+        if (fecha) {
+            sql += ' AND DATE(fecha_interaccion) = ?';
+            params.push(fecha);
+        }
+        if (desde) {
+            sql += ' AND fecha_interaccion >= ?';
+            params.push(desde);
+        }
+        const [rows] = await db.query(sql, params);
+        res.json({ total: rows[0].total });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = router;

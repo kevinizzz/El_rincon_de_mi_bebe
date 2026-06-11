@@ -28,6 +28,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formCategoria = document.getElementById('formCategoria');
     const formCombo = document.getElementById('formCombo');
 
+    // Campos ocultos para almacenar el ID durante la edición
+    const editIdProducto = document.getElementById('editIdProducto') || (() => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.id = 'editIdProducto';
+        document.getElementById('formProducto').appendChild(input);
+        return input;
+    })();
+    const editIdCategoria = document.getElementById('editIdCategoria') || (() => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.id = 'editIdCategoria';
+        document.getElementById('formCategoria').appendChild(input);
+        return input;
+    })();
+    const editIdCombo = document.getElementById('editIdCombo') || (() => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.id = 'editIdCombo';
+        document.getElementById('formCombo').appendChild(input);
+        return input;
+    })();
+
     function escapeHtml(str) {
         return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
     }
@@ -41,18 +64,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         modalProducto.style.display = 'none';
         modalCategoria.style.display = 'none';
         modalCombo.style.display = 'none';
+        // Limpiar campos ocultos solo al cerrar manualmente
+        editIdProducto.value = '';
+        editIdCategoria.value = '';
+        editIdCombo.value = '';
         currentEdit = null;
     }
 
     function abrirModal(modal) {
-        cerrarModales();
+        // Ocultar todos los modales sin limpiar campos
+        modalProducto.style.display = 'none';
+        modalCategoria.style.display = 'none';
+        modalCombo.style.display = 'none';
         modal.style.display = 'flex';
     }
 
     // Cargar selectores (productos y categorías)
     async function cargarSelectores() {
         try {
-            // Productos
             const resProd = await fetch(`${API_BASE}/productos?limite=1000`);
             const dataProd = await resProd.json();
             const productos = dataProd.data || [];
@@ -63,7 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             window.listaProductos = productos;
 
-            // Categorías
             const resCat = await fetch(`${API_BASE}/categorias`);
             const categorias = await resCat.json();
             const selectCategoria = document.getElementById('catCategoria');
@@ -79,22 +107,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Cargar todas las promociones y combos
     async function cargarTodo() {
         try {
-            console.log('Cargando promociones normales...');
             const resNormales = await fetch(`${API_BASE}/promociones`);
-            if (!resNormales.ok) throw new Error(`HTTP ${resNormales.status}: ${resNormales.statusText}`);
+            if (!resNormales.ok) throw new Error(`HTTP ${resNormales.status}`);
             promocionesNormales = await resNormales.json();
-            console.log(`✅ ${promocionesNormales.length} promociones normales cargadas`);
 
-            console.log('Cargando combos...');
             const resCombos = await fetch(`${API_BASE}/promociones/combos/todos`);
-            if (!resCombos.ok) throw new Error(`HTTP ${resCombos.status}: ${resCombos.statusText}`);
+            if (!resCombos.ok) throw new Error(`HTTP ${resCombos.status}`);
             combos = await resCombos.json();
-            console.log(`✅ ${combos.length} combos cargados`);
 
             renderizar();
         } catch (error) {
-            console.error('❌ Error en cargarTodo:', error);
-            promoGrid.innerHTML = `<div class="error">Error al cargar datos: ${error.message}. Verifique que el backend esté corriendo en ${API_BASE}.</div>`;
+            console.error('Error en cargarTodo:', error);
+            promoGrid.innerHTML = `<div class="error">Error al cargar datos: ${error.message}</div>`;
         }
     }
 
@@ -125,12 +149,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const searchTerm = searchInput.value.trim().toLowerCase();
         const tipo = tipoFilter.value;
         let filtradas = todas;
-        if (searchTerm) {
-            filtradas = filtradas.filter(item => item.titulo.toLowerCase().includes(searchTerm));
-        }
-        if (tipo !== 'all') {
-            filtradas = filtradas.filter(item => item.tipo === tipo);
-        }
+        if (searchTerm) filtradas = filtradas.filter(item => item.titulo.toLowerCase().includes(searchTerm));
+        if (tipo !== 'all') filtradas = filtradas.filter(item => item.tipo === tipo);
 
         if (filtradas.length === 0) {
             promoGrid.innerHTML = '<div class="empty-state">No hay promociones o combos</div>';
@@ -153,7 +173,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `).join('');
 
-        // Reasignar eventos
         document.querySelectorAll('.btn-edit').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -221,7 +240,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('prodFechaInicio').value = data.fecha_inicio?.split('T')[0] || '';
                     document.getElementById('prodFechaFin').value = data.fecha_fin?.split('T')[0] || '';
                     document.getElementById('prodActiva').checked = data.activa === 1;
+                    // Abrir modal ANTES de asignar ID
                     abrirModal(modalProducto);
+                    editIdProducto.value = id;
                 } else if (tipo === 'categoria') {
                     document.getElementById('catTitulo').value = data.titulo;
                     document.getElementById('catCategoria').value = data.categoria_id;
@@ -231,6 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('catFechaFin').value = data.fecha_fin?.split('T')[0] || '';
                     document.getElementById('catActiva').checked = data.activa === 1;
                     abrirModal(modalCategoria);
+                    editIdCategoria.value = id;
                 }
             } else { // combo
                 const res = await fetch(`${API_BASE}/promociones/combos/todos`);
@@ -249,8 +271,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const prod = window.listaProductos.find(p => p.id == pid);
                     return prod ? { id: prod.id, nombre: prod.nombre } : null;
                 }).filter(p => p);
-                actualizarListaSeleccionadosCombo();
                 abrirModal(modalCombo);
+                editIdCombo.value = id;
+                actualizarListaSeleccionadosCombo();
             }
         } catch (error) {
             console.error(error);
@@ -321,7 +344,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ========== VALIDACIÓN DE PROMOCIÓN ÚNICA POR PRODUCTO ==========
     async function validarProductoSinPromocion(productoId, promocionIdEditar = null) {
         try {
             const res = await fetch(`${API_BASE}/promociones?activa=1`);
@@ -348,31 +370,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // Validar que el producto no tenga otra promoción activa (solo si es nueva o si cambiamos de producto)
-        const editando = (currentEdit && currentEdit.tipo === 'producto' && currentEdit.entidad === 'normal');
+        const editId = editIdProducto.value;
+        const editando = editId !== '';
         const productoIdActual = parseInt(producto_id);
-        const esMismoProducto = editando && (() => {
-            // Obtener el id del producto de la promoción que se está editando (lo guardamos al abrir)
-            const prodIdOriginal = currentEdit ? currentEdit.producto_id_original : null;
-            return prodIdOriginal === productoIdActual;
-        })();
 
-        if (!editando || !esMismoProducto) {
-            const esValido = await validarProductoSinPromocion(productoIdActual, editando ? currentEdit.id : null);
+        if (!editando) {
+            const esValido = await validarProductoSinPromocion(productoIdActual, null);
             if (!esValido) {
                 alert('Este producto ya tiene una promoción activa. Solo puede tener una.');
                 return;
             }
+        } else {
+            const esValido = await validarProductoSinPromocion(productoIdActual, parseInt(editId));
+            if (!esValido) {
+                alert('Este producto ya tiene otra promoción activa. Solo puede tener una.');
+                return;
+            }
         }
 
-        const body = { titulo, producto_id: parseInt(producto_id), descripcion, descuento, fecha_inicio, fecha_fin, activa };
+        const body = { titulo, producto_id: productoIdActual, descripcion, descuento, fecha_inicio, fecha_fin, activa };
+        let url = `${API_BASE}/promociones`;
+        let method = 'POST';
+        if (editando) {
+            url += `/${editId}`;
+            method = 'PUT';
+        }
+
         try {
-            let url = `${API_BASE}/promociones`;
-            let method = 'POST';
-            if (editando) {
-                url += `/${currentEdit.id}`;
-                method = 'PUT';
-            }
             const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
             if (res.ok) {
                 alert(editando ? 'Actualizado' : 'Creado');
@@ -398,17 +422,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Complete todos los campos obligatorios');
             return;
         }
+
+        const editId = editIdCategoria.value;
+        const editando = editId !== '';
         const body = { titulo, categoria_id: parseInt(categoria_id), descripcion, descuento, fecha_inicio, fecha_fin, activa };
+        let url = `${API_BASE}/promociones`;
+        let method = 'POST';
+        if (editando) {
+            url += `/${editId}`;
+            method = 'PUT';
+        }
+
         try {
-            let url = `${API_BASE}/promociones`;
-            let method = 'POST';
-            if (currentEdit && currentEdit.tipo === 'categoria' && currentEdit.entidad === 'normal') {
-                url += `/${currentEdit.id}`;
-                method = 'PUT';
-            }
             const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
             if (res.ok) {
-                alert(currentEdit ? 'Actualizado' : 'Creado');
+                alert(editando ? 'Actualizado' : 'Creado');
                 cerrarModales();
                 cargarTodo();
             } else {
@@ -431,17 +459,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Complete todos los campos y seleccione al menos un producto');
             return;
         }
+
+        const editId = editIdCombo.value;
+        const editando = editId !== '';
         const body = { titulo, descripcion, descuento, fecha_inicio, fecha_fin, activa, productos_ids };
+        let url = `${API_BASE}/promociones/combos`;
+        let method = 'POST';
+        if (editando) {
+            url += `/${editId}`;
+            method = 'PUT';
+        }
+
         try {
-            let url = `${API_BASE}/promociones/combos`;
-            let method = 'POST';
-            if (currentEdit && currentEdit.tipo === 'combo') {
-                url += `/${currentEdit.id}`;
-                method = 'PUT';
-            }
             const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
             if (res.ok) {
-                alert(currentEdit ? 'Combo actualizado' : 'Combo creado');
+                alert(editando ? 'Combo actualizado' : 'Combo creado');
                 cerrarModales();
                 cargarTodo();
             } else {
@@ -454,18 +486,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Eventos
     btnProducto.addEventListener('click', () => {
         currentEdit = null;
+        editIdProducto.value = '';
         formProducto.reset();
         document.getElementById('prodActiva').checked = true;
         abrirModal(modalProducto);
     });
     btnCategoria.addEventListener('click', () => {
         currentEdit = null;
+        editIdCategoria.value = '';
         formCategoria.reset();
         document.getElementById('catActiva').checked = true;
         abrirModal(modalCategoria);
     });
     btnCombo.addEventListener('click', () => {
         currentEdit = null;
+        editIdCombo.value = '';
         formCombo.reset();
         document.getElementById('comboActiva').checked = true;
         productosSeleccionadosCombo = [];
@@ -476,9 +511,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         abrirModal(modalCombo);
     });
 
-    closeModalBtns.forEach(btn => {
-        btn.addEventListener('click', cerrarModales);
-    });
+    closeModalBtns.forEach(btn => btn.addEventListener('click', cerrarModales));
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal-overlay')) cerrarModales();
     });

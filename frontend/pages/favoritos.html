@@ -4,256 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Favoritos | El rincón de mi Bebé</title>
-
-    <!-- Iconos y fuentes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Estilos globales -->
     <link rel="stylesheet" href="../css/global.css">
-    <!-- Estilos específicos de favoritos -->
     <link rel="stylesheet" href="../css/stylefavoritos.css">
 </head>
 <body>
 
-    <!-- ================= HEADER (igual que en todas las páginas) ================= -->
-    <header class="encabezado_principal">
-        <nav class="contenedor_navegacion">
-            <input type="checkbox" id="controlador_menu" class="input_menu_oculto">
-            <label for="controlador_menu" class="boton_hamburguesa">
-                <span class="linea_menu"></span>
-                <span class="linea_menu"></span>
-                <span class="linea_menu"></span>
-            </label>
-
-            <div class="seccion_logo">
-                <a href="inicio.html" class="enlace_logo">
-                    <img src="../images/logo.png" alt="Logo" class="imagen_logo">
-                    <span class="nombre_marca">El rincón de mi Bebé</span>
-                </a>
-            </div>
-
-            <ul class="lista_navegacion">
-                <li><a href="inicio.html" class="enlace_menu">Inicio</a></li>
-                <li><a href="catalogo.html" class="enlace_menu">Catálogo</a></li>
-                <li><a href="promociones.html" class="enlace_menu">Promociones</a></li>
-                <li><a href="nosotros.html" class="enlace_menu">Nosotros</a></li>
-            </ul>
-
-            <div class="acciones_usuario">
-                <!-- BUSCADOR (dentro de acciones_usuario) -->
-                <div class="buscador_contenedor" id="buscadorContainer">
-                    <img src="../images/buscar.png" alt="Buscar" class="icono_lupa">
-                    <input type="text" id="inputBuscar" placeholder="Buscar producto..." class="input_buscar">
-                </div>
-                <a href="favoritos.html" class="boton_accion activo-fav">
-                    <img src="../images/favorito.png" alt="Favoritos">
-                </a>
-                <a href="perfil.html" class="boton_accion">
-                    <img src="../images/usuario.png" alt="Usuario">
-                </a>
-            </div>
-        </nav>
-    </header>
-
-    <!-- ================= CONTENIDO PRINCIPAL ================= -->
-    <main class="contenedor_favoritos">
-        <!-- Encabezado de la página -->
-        <div class="encabezado_favoritos">
-            <div>
-                <h1>Mis Favoritos</h1>
-                <p class="contador_favoritos">Tienes <span>8</span> productos guardados en tu lista de favoritos</p>
-            </div>
-            <div class="acciones_favoritos">
-                <button class="boton_secundario" id="btnCompartirLista">
-                    <i class="fa-regular fa-share-from-square"></i> Compartir lista
-                </button>
-                <button class="boton_primario boton_whatsapp_lista" id="btnConsultarTodo">
-                    <i class="fa-brands fa-whatsapp"></i> Consultar todo por WhatsApp
-                </button>
-            </div>
+<header class="encabezado_principal">
+    <nav class="contenedor_navegacion">
+        <input type="checkbox" id="controlador_menu" class="input_menu_oculto">
+        <label for="controlador_menu" class="boton_hamburguesa">
+            <span class="linea_menu"></span><span class="linea_menu"></span><span class="linea_menu"></span>
+        </label>
+        <div class="seccion_logo">
+            <a href="inicio.html" class="enlace_logo">
+                <img src="../images/logo.png" alt="Logo" class="imagen_logo">
+                <span class="nombre_marca">El rincón de mi Bebé</span>
+            </a>
         </div>
-
-        <!-- Filtros por categoría (versión simplificada) -->
-        <div class="filtros_categoria">
-            <button class="filtro_activo">Todos</button>
-            <button>Ropa</button>
-            <button>Accesorios</button>
-            <button>Calzado</button>
-            <button>Higiene</button>
-            <button>Ofertas</button>
+        <ul class="lista_navegacion">
+            <li><a href="inicio.html" class="enlace_menu">Inicio</a></li>
+            <li><a href="catalogo.html" class="enlace_menu">Catálogo</a></li>
+            <li><a href="promociones.html" class="enlace_menu">Promociones</a></li>
+            <li><a href="nosotros.html" class="enlace_menu">Nosotros</a></li>
+        </ul>
+        <div class="acciones_usuario">
+            <a href="favoritos.html" class="boton_accion">
+                <img src="../images/favorito.png" alt="Favoritos">
+            </a>
+            <a href="admin_dashboard.html" class="boton_accion">
+                <img src="../images/usuario.png" alt="Usuario">
+            </a>
         </div>
+    </nav>
+</header>
 
-        <!-- Ordenar -->
-        <div class="barra_ordenar">
-            <span>Ordenar:</span>
-            <select id="ordenarSelect">
-                <option>Recientes</option>
-                <option>Precio: menor a mayor</option>
-                <option>Precio: mayor a menor</option>
-                <option>Más antiguos</option>
-            </select>
+<main class="contenedor_favoritos">
+    <div class="encabezado_favoritos">
+        <div>
+            <h1>Mis Favoritos</h1>
+            <p class="contador_favoritos">Tienes <span id="contadorFav">0</span> productos guardados</p>
         </div>
-
-        <!-- Grid de productos favoritos -->
-        <div class="rejilla_favoritos">
-            <!-- Producto 1 -->
-            <article class="tarjeta_favorito">
-                <div class="imagen_favorito">
-                    <span class="badge_oferta">-40%</span>
-                </div>
-                <div class="info_favorito">
-                    <span class="categoria_favorito">ABRIGOS Y SUDADERAS</span>
-                    <h3>Chaqueta Acolchada Nieve</h3>
-                    <div class="precios_favorito">
-                        <span class="precio_actual">C$650</span>
-                        <span class="precio_anterior">C$1,080</span>
-                    </div>
-                    <button class="boton_consultar">Consultar</button>
-                </div>
-            </article>
-
-            <!-- Producto 2 -->
-            <article class="tarjeta_favorito">
-                <div class="imagen_favorito">
-                    <span class="badge_nuevo">NUEVO</span>
-                </div>
-                <div class="info_favorito">
-                    <span class="categoria_favorito">VESTIDOS</span>
-                    <h3>Vestido Flores Primavera</h3>
-                    <div class="precios_favorito">
-                        <span class="precio_actual">C$850</span>
-                    </div>
-                    <button class="boton_consultar">Consultar</button>
-                </div>
-            </article>
-
-            <!-- Producto 3 -->
-            <article class="tarjeta_favorito">
-                <div class="imagen_favorito">
-                    <span class="badge_oferta">-30%</span>
-                </div>
-                <div class="info_favorito">
-                    <span class="categoria_favorito">BODIES</span>
-                    <h3>Body Algodón Suave RN</h3>
-                    <div class="precios_favorito">
-                        <span class="precio_actual">C$420</span>
-                        <span class="precio_anterior">C$600</span>
-                    </div>
-                    <button class="boton_consultar">Consultar</button>
-                </div>
-            </article>
-
-            <!-- Producto 4 -->
-            <article class="tarjeta_favorito">
-                <div class="imagen_favorito">
-                    <span class="badge_oferta">-30%</span>
-                </div>
-                <div class="info_favorito">
-                    <span class="categoria_favorito">CALZADO</span>
-                    <h3>Mocasines Piel Suave</h3>
-                    <div class="precios_favorito">
-                        <span class="precio_actual">C$560</span>
-                        <span class="precio_anterior">C$800</span>
-                    </div>
-                    <button class="boton_consultar">Consultar</button>
-                </div>
-            </article>
-
-            <!-- Producto 5 -->
-            <article class="tarjeta_favorito">
-                <div class="imagen_favorito">
-                    <span class="badge_nuevo">NUEVO</span>
-                </div>
-                <div class="info_favorito">
-                    <span class="categoria_favorito">ABRIGOS Y SUDADERAS</span>
-                    <h3>Suéter Rayas Marinero</h3>
-                    <div class="precios_favorito">
-                        <span class="precio_actual">C$720</span>
-                    </div>
-                    <button class="boton_consultar">Consultar</button>
-                </div>
-            </article>
-
-            <!-- Producto 6 -->
-            <article class="tarjeta_favorito">
-                <div class="imagen_favorito">
-                    <!-- sin badge -->
-                </div>
-                <div class="info_favorito">
-                    <span class="categoria_favorito">ACCESORIOS</span>
-                    <h3>Diadema Lazo Elegante</h3>
-                    <div class="precios_favorito">
-                        <span class="precio_actual">C$180</span>
-                    </div>
-                    <button class="boton_consultar">Consultar</button>
-                </div>
-            </article>
-
-            <!-- Producto 7 -->
-            <article class="tarjeta_favorito">
-                <div class="imagen_favorito">
-                    <span class="badge_oferta">-50%</span>
-                </div>
-                <div class="info_favorito">
-                    <span class="categoria_favorito">CONJUNTOS</span>
-                    <h3>Conjunto Jogger Hoodie</h3>
-                    <div class="precios_favorito">
-                        <span class="precio_actual">C$600</span>
-                        <span class="precio_anterior">C$1,200</span>
-                    </div>
-                    <button class="boton_consultar">Consultar</button>
-                </div>
-            </article>
-
-            <!-- Producto 8 -->
-            <article class="tarjeta_favorito">
-                <div class="imagen_favorito">
-                    <!-- sin badge -->
-                </div>
-                <div class="info_favorito">
-                    <span class="categoria_favorito">HIGIENE</span>
-                    <h3>Set Shampoo y Crema Bebé</h3>
-                    <div class="precios_favorito">
-                        <span class="precio_actual">C$380</span>
-                    </div>
-                    <button class="boton_consultar">Consultar</button>
-                </div>
-            </article>
-        </div>
-
-        <!-- Banner final de WhatsApp -->
-        <div class="banner_whatsapp_favoritos">
-            <div>
-                <i class="fa-brands fa-whatsapp"></i>
-                <div>
-                    <strong>¿Te gustó algo? ¡Consúltanos por WhatsApp!</strong>
-                    <p>Envíanos tu lista de favoritos y te asesoramos con tallas, disponibilidad y precios especiales.</p>
-                </div>
-            </div>
-            <button class="boton_primario" id="btnEnviarLista">
-                Enviar lista por WhatsApp <i class="fa-brands fa-whatsapp"></i>
+        <div class="acciones_favoritos">
+            <button class="boton_secundario" id="btnCompartirLista">
+                <i class="fa-regular fa-share-from-square"></i> Compartir lista
+            </button>
+            <button class="boton_primario boton_whatsapp_lista" id="btnConsultarTodo">
+                <i class="fa-brands fa-whatsapp"></i> Consultar todo por WhatsApp
             </button>
         </div>
-    </main>
+    </div>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="pie_pagina">
-        <div class="contenedor_footer">
-            <div class="copyright">© 2026 El rincón de mi Bebé</div>
-            <nav class="enlaces_legales">
-                <a href="#">Términos y Condiciones</a>
-                <a href="#">Política de Privacidad</a>
-                <a href="#">Uso del sitio</a>
-            </nav>
-            <div class="redes_sociales">
-                <a href="#" class="boton_red_social"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" class="boton_red_social"><i class="fa-brands fa-facebook-f"></i></a>
+    <div class="filtros_categoria">
+        <button class="filtro_activo">Todos</button>
+    </div>
+
+    <div class="barra_ordenar">
+        <span>Ordenar:</span>
+        <select id="ordenarSelect">
+            <option value="recientes">Recientes</option>
+            <option value="price_asc">Precio: menor a mayor</option>
+            <option value="price_desc">Precio: mayor a menor</option>
+            <option value="antiguos">Más antiguos</option>
+        </select>
+    </div>
+
+    <div class="rejilla_favoritos" id="favoritosGrid">
+        <div class="cargando">Cargando favoritos...</div>
+    </div>
+
+    <div class="banner_whatsapp_favoritos">
+        <div>
+            <i class="fa-brands fa-whatsapp"></i>
+            <div>
+                <strong>¿Te gustó algo? ¡Consúltanos por WhatsApp!</strong>
+                <p>Envíanos tu lista de favoritos y te asesoramos.</p>
             </div>
         </div>
-    </footer>
+        <button class="boton_primario" id="btnEnviarLista">
+            Enviar lista por WhatsApp <i class="fa-brands fa-whatsapp"></i>
+        </button>
+    </div>
+</main>
 
-    <!-- Scripts -->
-    <script src="../js/global.js"></script>
-    <!-- Script específico para favoritos (opcional) -->
-    <script src="../js/favoritos.js"></script>
+<footer class="pie_pagina">
+    <div class="contenedor_footer">
+        <div class="copyright">© 2026 El rincón de mi Bebé</div>
+        <div class="redes_sociales">
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="boton_red_social"><i class="fa-brands fa-facebook-f"></i></a>
+        </div>
+    </div>
+</footer>
+
+<script src="../js/public-session.js"></script>
+<script src="../js/global.js"></script>
+<script src="../js/favoritos.js"></script>
 </body>
 </html>

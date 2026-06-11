@@ -283,7 +283,7 @@
     transform: translateY(-2px);
 }
 
-/* Productos relacionados */
+/* ========== PRODUCTOS RELACIONADOS (MEJORADO) ========== */
 .seccion_relacionados {
     max-width: 1280px;
     margin: 40px auto 0;
@@ -292,44 +292,139 @@
 .titulo_seccion {
     font-size: 1.9rem;
     font-weight: 700;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 .rejilla_productos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 30px;
 }
+
 .tarjeta_producto {
     background: white;
     border-radius: 24px;
     overflow: hidden;
-    transition: 0.2s;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
     cursor: pointer;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 .tarjeta_producto:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sombra-suave);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
 }
+
 .contenedor_imagen_producto {
+    position: relative;
     aspect-ratio: 1 / 1.2;
     background: var(--color-fondo-gris);
+    overflow: hidden;
 }
+.contenedor_imagen_producto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+.tarjeta_producto:hover .contenedor_imagen_producto img {
+    transform: scale(1.03);
+}
+
+/* Badge de descuento */
+.badge_producto.descuento {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #ff4757;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
 .info_producto {
     padding: 16px;
 }
+.nombre_producto {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+/* Precios */
+.product-price {
+    margin: 12px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.old-price {
+    text-decoration: line-through;
+    color: #aaa;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.discount-price {
+    color: #ff4757;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+.product-price-normal {
+    margin: 12px 0;
+    font-weight: 700;
+    color: var(--color-coral);
+    font-size: 1.1rem;
+}
+
+/* Estrellas de calificación (solo si hay datos) */
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0;
+}
+.stars {
+    display: inline-flex;
+    gap: 2px;
+    color: #ffb648;
+    font-size: 0.8rem;
+}
+.rating-count {
+    font-size: 0.7rem;
+    color: #888;
+}
+.sin-opiniones {
+    font-size: 0.7rem;
+    color: #aaa;
+}
+
+/* Botón Ver detalles */
 .boton_producto {
-    display: block;
-    text-align: center;
-    margin-top: 12px;
-    padding: 10px;
-    background: var(--color-fondo-gris);
+    width: 100%;
+    height: 42px;
+    border: 1px solid var(--borde-suave);
+    background: white;
     border-radius: 40px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
     color: var(--color-texto-titulo);
+    font-size: 0.85rem;
+    margin-top: 8px;
 }
 .boton_producto:hover {
     background: var(--color-coral);
     color: white;
+    border-color: var(--color-coral);
 }
 
 /* Responsive */
@@ -349,6 +444,9 @@
     .informacion_producto {
         order: 3;
     }
+    .rejilla_productos {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
 }
 @media (max-width: 600px) {
     .titulo_producto {
@@ -362,5 +460,9 @@
     }
     .rejilla_productos {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .titulo_seccion {
+        font-size: 1.5rem;
     }
 }

@@ -10,7 +10,14 @@
     <link rel="stylesheet" href="../css/styleadmin-configuracion.css">
 </head>
 <body>
+<script>
+    console.log('admin_logged:', sessionStorage.getItem('admin_logged'));
 
+    if (!sessionStorage.getItem('admin_logged')) {
+        console.log('Redirigiendo al login');
+        window.location.href = 'login.html';
+    }
+</script>
 <div class="admin-wrapper">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">

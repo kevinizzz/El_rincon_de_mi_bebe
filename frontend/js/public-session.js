@@ -10,9 +10,9 @@ if (!session_uuid) {
 
 // Detectar dispositivo y navegador
 const dispositivo = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'Móvil' : 'PC';
-const navegador = navigator.userAgent.substring(0, 255); // limitar longitud
+const navegador = navigator.userAgent.substring(0, 255);
 
-// Iniciar sesión (solo una vez por sesión)
+// Iniciar sesión
 fetch(`${API_BASE}/sesiones/iniciar`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

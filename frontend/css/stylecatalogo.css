@@ -433,3 +433,32 @@
         display: none;
     }
 }
+
+/* Transición para ocultar filtros hacia la derecha (PC) */
+.barra_lateral_filtros {
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    transform: translateX(0);
+}
+.barra_lateral_filtros.sidebar_oculto {
+    transform: translateX(100%);
+    width: 0;
+    min-width: 0;
+    margin-left: 0;
+    opacity: 0;
+    visibility: hidden;
+}
+/* Ajuste del contenedor principal cuando sidebar está oculto */
+.contenedor_catalogo.sidebar-hidden .seccion_productos_catalogo {
+    width: 100%;
+}
+/* Responsive: en móvil el comportamiento sigue siendo el original (despliegue hacia abajo) */
+@media (max-width: 850px) {
+    .barra_lateral_filtros.sidebar_oculto {
+        transform: translateY(-100%);
+        width: 100%;
+        display: none;
+    }
+    .barra_lateral_filtros {
+        transform: translateY(0);
+    }
+}

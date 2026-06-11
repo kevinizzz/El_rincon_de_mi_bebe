@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
+// Función auxiliar para registrar actividades del administrador
+async function registrarActividadAdmin(accion, descripcion) {
+    try {
+        await db.query(
+            'INSERT INTO actividades_admin (accion, descripcion) VALUES (?, ?)',
+            [accion, descripcion]
+        );
+    } catch (error) {
+        console.error('Error registrando actividad:', error);
+    }
+}
+
 // ==================== RUTAS ESPECÍFICAS (DEBEN IR PRIMERO) ====================
 
 // 1. Promociones destacadas (frontend público)
@@ -60,12 +72,23 @@ router.get('/combos', async (req, res) => {
     }
 });
 
-// 3. Todos los combos (para admin)
+// 3. Todos los combos (para admin) – incluye productos_ids
 router.get('/combos/todos', async (req, res) => {
     try {
         const [rows] = await db.query(`
-            SELECT c.*,
-                   (SELECT GROUP_CONCAT(p.nombre SEPARATOR ' + ') FROM combo_productos cp JOIN productos p ON cp.producto_id = p.id WHERE cp.combo_id = c.id) as productos_nombres
+            SELECT
+                c.*,
+                (
+                    SELECT GROUP_CONCAT(p.nombre SEPARATOR ' + ')
+                    FROM combo_productos cp
+                    JOIN productos p ON cp.producto_id = p.id
+                    WHERE cp.combo_id = c.id
+                ) AS productos_nombres,
+                (
+                    SELECT GROUP_CONCAT(cp.producto_id)
+                    FROM combo_productos cp
+                    WHERE cp.combo_id = c.id
+                ) AS productos_ids
             FROM promociones_combo c
             ORDER BY c.id DESC
         `);
@@ -128,7 +151,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Crear promoción normal (con validación de única promo por producto)
+// Crear promoción normal
 router.post('/', async (req, res) => {
     try {
         const { titulo, categoria_id, producto_id, descuento, descripcion, fecha_inicio, fecha_fin, activa } = req.body;
@@ -155,6 +178,10 @@ router.post('/', async (req, res) => {
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [titulo, categoria_id || null, producto_id || null, descuento, descripcion || '', fecha_inicio, fecha_fin, activa !== undefined ? activa : 1]
         );
+
+        // Registrar actividad del administrador
+        await registrarActividadAdmin('crear_promocion', `Promoción creada: ${titulo}`);
+
         res.status(201).json({ id: result.insertId, message: 'Promoción creada' });
     } catch (error) {
         console.error(error);
@@ -162,7 +189,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Actualizar promoción normal (con validación de única promo por producto)
+// Actualizar promoción normal
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -192,6 +219,10 @@ router.put('/:id', async (req, res) => {
              WHERE id = ?`,
             [titulo, categoria_id || null, producto_id || null, descuento, descripcion || '', fecha_inicio, fecha_fin, activa, id]
         );
+
+        // Registrar actividad del administrador
+        await registrarActividadAdmin('editar_promocion', `Promoción actualizada: ${titulo} (ID ${id})`);
+
         res.json({ message: 'Promoción actualizada' });
     } catch (error) {
         console.error(error);
@@ -203,9 +234,18 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Obtener título antes de eliminar para el registro
+        const [promo] = await db.query('SELECT titulo FROM promociones WHERE id = ?', [id]);
+        const titulo = promo.length ? promo[0].titulo : `ID ${id}`;
+
         await db.query('DELETE FROM promociones WHERE id = ?', [id]);
+
+        await registrarActividadAdmin('eliminar_promocion', `Promoción eliminada: ${titulo}`);
+
         res.json({ message: 'Promoción eliminada' });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -215,8 +255,14 @@ router.patch('/:id/toggle', async (req, res) => {
     try {
         const { id } = req.params;
         await db.query('UPDATE promociones SET activa = NOT activa WHERE id = ?', [id]);
+
+        const [promo] = await db.query('SELECT titulo, activa FROM promociones WHERE id = ?', [id]);
+        const estado = promo[0].activa ? 'activada' : 'desactivada';
+        await registrarActividadAdmin('toggle_promocion', `Promoción ${promo[0].titulo} ${estado}`);
+
         res.json({ message: 'Estado actualizado' });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -239,6 +285,9 @@ router.post('/combos', async (req, res) => {
         for (const prodId of productos_ids) {
             await db.query('INSERT INTO combo_productos (combo_id, producto_id) VALUES (?, ?)', [comboId, prodId]);
         }
+
+        await registrarActividadAdmin('crear_combo', `Combo creado: ${titulo}`);
+
         res.status(201).json({ id: comboId, message: 'Combo creado' });
     } catch (error) {
         console.error(error);
@@ -271,6 +320,9 @@ router.put('/combos/:id', async (req, res) => {
         for (const prodId of productos_ids) {
             await db.query('INSERT INTO combo_productos (combo_id, producto_id) VALUES (?, ?)', [id, prodId]);
         }
+
+        await registrarActividadAdmin('editar_combo', `Combo actualizado: ${titulo} (ID ${id})`);
+
         res.json({ message: 'Combo actualizado' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -281,7 +333,14 @@ router.put('/combos/:id', async (req, res) => {
 router.delete('/combos/:id', async (req, res) => {
     try {
         const { id } = req.params;
+
+        const [combo] = await db.query('SELECT titulo FROM promociones_combo WHERE id = ?', [id]);
+        const titulo = combo.length ? combo[0].titulo : `ID ${id}`;
+
         await db.query('DELETE FROM promociones_combo WHERE id = ?', [id]);
+
+        await registrarActividadAdmin('eliminar_combo', `Combo eliminado: ${titulo}`);
+
         res.json({ message: 'Combo eliminado' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -293,6 +352,11 @@ router.patch('/combos/:id/toggle', async (req, res) => {
     try {
         const { id } = req.params;
         await db.query('UPDATE promociones_combo SET activa = NOT activa WHERE id = ?', [id]);
+
+        const [combo] = await db.query('SELECT titulo, activa FROM promociones_combo WHERE id = ?', [id]);
+        const estado = combo[0].activa ? 'activado' : 'desactivado';
+        await registrarActividadAdmin('toggle_combo', `Combo ${combo[0].titulo} ${estado}`);
+
         res.json({ message: 'Estado actualizado' });
     } catch (error) {
         res.status(500).json({ error: error.message });

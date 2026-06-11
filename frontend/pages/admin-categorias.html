@@ -10,7 +10,11 @@
     <link rel="stylesheet" href="../css/styleadmin-categorias.css">
 </head>
 <body>
-
+        <script>
+        if (!sessionStorage.getItem('admin_logged')) {
+            window.location.href = 'login.html';
+        }
+    </script>
 <div class="admin-wrapper">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">

@@ -1,4 +1,4 @@
-/* styleadmin_dashboard.css - ya lo tienes, pero añado los estilos del modal */
+/* styleadmin_dashboard.css - Sin visitantes activos ni quick stats */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -110,6 +110,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 28px;
     margin-top: 20px;
+    margin-bottom: 40px;
 }
 .popular-products-card, .activity-card {
     background: white;
@@ -198,7 +199,15 @@
     color: #888;
 }
 
-/* ESTILOS DEL MODAL (se añaden al final) */
+.last-update {
+    text-align: center;
+    font-size: 0.7rem;
+    color: #aaa;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;

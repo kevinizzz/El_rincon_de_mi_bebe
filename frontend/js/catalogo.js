@@ -1,15 +1,20 @@
 // catalogo.js
 document.addEventListener('DOMContentLoaded', async () => {
     const API_BASE = 'http://localhost:3000/api';
+
+    // Leer parámetros de la URL al cargar
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialFilters = {
+        categoria: urlParams.get('categoria') || null,
+        orden: urlParams.get('orden') || 'recent',
+        minPrice: urlParams.get('precio_min') || '',
+        maxPrice: urlParams.get('precio_max') || '',
+        busqueda: urlParams.get('busqueda') || ''
+    };
+
     let currentPage = 1;
     let totalPages = 1;
-    let currentFilters = { 
-        categoria: null, 
-        orden: 'recent', 
-        minPrice: '', 
-        maxPrice: '', 
-        busqueda: '' 
-    };
+    let currentFilters = { ...initialFilters };
 
     const productsGrid = document.getElementById('productsGrid');
     const paginationDiv = document.getElementById('pagination');
@@ -22,11 +27,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     const precioMaxInput = document.getElementById('precioMax');
     const searchInput = document.getElementById('searchInput');
 
-    window.verDetalle = function(id) {
-        if (id) window.location.href = `detalle.html?id=${id}`;
-    };
+    // Pre-cargar valores desde URL
+    if (sortSelect) sortSelect.value = initialFilters.orden;
+    if (precioMinInput) precioMinInput.value = initialFilters.minPrice;
+    if (precioMaxInput) precioMaxInput.value = initialFilters.maxPrice;
+    if (searchInput) searchInput.value = initialFilters.busqueda;
 
-    // ==================== CARGAR CATEGORÍAS ====================
+    // ========== ACTUALIZAR URL (sin recargar) ==========
+    function updateURL() {
+        const params = new URLSearchParams();
+        if (currentFilters.categoria) params.set('categoria', currentFilters.categoria);
+        if (currentFilters.orden && currentFilters.orden !== 'recent') params.set('orden', currentFilters.orden);
+        if (currentFilters.minPrice) params.set('precio_min', currentFilters.minPrice);
+        if (currentFilters.maxPrice) params.set('precio_max', currentFilters.maxPrice);
+        if (currentFilters.busqueda) params.set('busqueda', currentFilters.busqueda);
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({}, '', newUrl);
+    }
+
+    // ========== CARGAR CATEGORÍAS ==========
     async function loadCategorias() {
         try {
             const res = await fetch(`${API_BASE}/categorias`);
@@ -37,8 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
             categoriasList.innerHTML = `
-                <li><a href="#" data-categoria="all" class="categoria_enlace active">Todos los productos</a></li>
-                ${cats.map(c => `<li><a href="#" data-categoria="${c.id}" class="categoria_enlace">${escapeHtml(c.nombre)}</a></li>`).join('')}
+                <li><a href="#" data-categoria="all" class="categoria_enlace ${!currentFilters.categoria ? 'active' : ''}">Todos los productos</a></li>
+                ${cats.map(c => `<li><a href="#" data-categoria="${c.id}" class="categoria_enlace ${currentFilters.categoria == c.id ? 'active' : ''}">${escapeHtml(c.nombre)}</a></li>`).join('')}
             `;
             document.querySelectorAll('.categoria_enlace').forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -47,6 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     link.classList.add('active');
                     currentFilters.categoria = link.dataset.categoria === 'all' ? null : link.dataset.categoria;
                     currentPage = 1;
+                    updateURL();
                     loadProducts();
                 });
             });
@@ -56,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ==================== CARGAR PRODUCTOS ====================
+    // ========== CARGAR PRODUCTOS ==========
     async function loadProducts() {
         try {
             const params = new URLSearchParams();
@@ -90,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ==================== RENDERIZAR PRODUCTOS ====================
+    // ========== RENDERIZAR PRODUCTOS ==========
     function renderProducts(productos) {
         if (!productos.length) {
             productsGrid.innerHTML = '<div class="no-results">No se encontraron productos</div>';
@@ -124,11 +144,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                         <h3 class="nombre_producto">${escapeHtml(p.nombre)}</h3>
                         ${precioHtml}
-                        <button class="boton_producto" onclick="verDetalle(${p.id})">Ver detalles</button>
+                        <button class="boton_producto" data-id="${p.id}">Ver detalles</button>
                     </div>
                 </div>
             `;
         }).join('');
+
+        // Asignar evento a los botones "Ver detalles" (para guardar estado antes de ir a detalle)
+        document.querySelectorAll('.boton_producto').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const id = btn.getAttribute('data-id');
+                if (id) {
+                    // Guardar el estado actual de la URL antes de ir a detalle
+                    const currentState = window.location.search;
+                    // Usar localStorage para persistir el estado al volver
+                    localStorage.setItem('catalogo_return_state', currentState);
+                    window.location.href = `detalle.html?id=${id}`;
+                }
+            });
+        });
     }
 
     function generarEstrellas(promedio, total) {
@@ -147,7 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return html;
     }
 
-    // ==================== PAGINACIÓN ====================
+    // ========== PAGINACIÓN ==========
     function renderPagination() {
         if (totalPages <= 1) { paginationDiv.innerHTML = ''; return; }
         let html = '';
@@ -169,45 +204,88 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ==================== FILTROS Y EVENTOS ====================
+    // ========== FILTROS Y EVENTOS ==========
     if (sortSelect) {
+        sortSelect.value = currentFilters.orden;
         sortSelect.addEventListener('change', () => {
             currentFilters.orden = sortSelect.value;
             currentPage = 1;
+            updateURL();
             loadProducts();
         });
     }
-    if (precioMinInput && precioMaxInput) {
-        const applyPriceFilter = () => {
-            currentFilters.minPrice = precioMinInput.value;
-            currentFilters.maxPrice = precioMaxInput.value;
-            currentPage = 1;
-            loadProducts();
-        };
-        precioMinInput.addEventListener('change', applyPriceFilter);
-        precioMaxInput.addEventListener('change', applyPriceFilter);
+
+    // Aplicar filtro de precio con evento input + al hacer clic fuera
+    function applyPriceFilter() {
+        currentFilters.minPrice = precioMinInput.value;
+        currentFilters.maxPrice = precioMaxInput.value;
+        currentPage = 1;
+        updateURL();
+        loadProducts();
     }
 
-    // Toggle de filtros responsive (mejorado)
+    if (precioMinInput && precioMaxInput) {
+        precioMinInput.addEventListener('input', applyPriceFilter);
+        precioMaxInput.addEventListener('input', applyPriceFilter);
+        // Al hacer clic fuera de los inputs de precio, también aplicar
+        document.addEventListener('click', (e) => {
+            const dentroPrecio = e.target === precioMinInput || e.target === precioMaxInput ||
+                precioMinInput.contains(e.target) || precioMaxInput.contains(e.target);
+            if (!dentroPrecio) {
+                applyPriceFilter();
+            }
+        });
+    }
+
+    // Toggle de filtros con animación lateral en PC
     if (toggleFiltrosBtn && sidebar) {
         toggleFiltrosBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('filtros-visible');
-            const estaVisible = sidebar.classList.contains('filtros-visible');
-            textoFiltro.textContent = estaVisible ? 'Ocultar Filtros' : 'Mostrar Filtros';
+            sidebar.classList.toggle('sidebar_oculto');
+            const mainContainer = document.querySelector('.contenedor_catalogo');
+            if (mainContainer) mainContainer.classList.toggle('sidebar-hidden');
+            textoFiltro.textContent = sidebar.classList.contains('sidebar_oculto') ? 'Mostrar Filtros' : 'Ocultar Filtros';
         });
     }
 
+    // Búsqueda con debounce y actualización de URL
     let debounceTimeout;
     if (searchInput) {
+        searchInput.value = currentFilters.busqueda;
         searchInput.addEventListener('input', (e) => {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
                 currentFilters.busqueda = e.target.value.trim();
                 currentPage = 1;
+                updateURL();
                 loadProducts();
             }, 400);
         });
     }
+
+    // Restaurar estado desde localStorage al cargar (por si se vuelve del detalle)
+    const storedState = localStorage.getItem('catalogo_return_state');
+    if (storedState && !window.location.search) {
+        // Si no hay parámetros en la URL pero hay estado guardado, restaurar
+        window.location.search = storedState;
+        localStorage.removeItem('catalogo_return_state');
+    } else if (storedState && window.location.search !== storedState) {
+        // Si la URL actual es diferente al estado guardado, actualizar
+        const params = new URLSearchParams(storedState);
+        if (params.get('categoria')) currentFilters.categoria = params.get('categoria');
+        if (params.get('orden')) currentFilters.orden = params.get('orden');
+        if (params.get('precio_min')) currentFilters.minPrice = params.get('precio_min');
+        if (params.get('precio_max')) currentFilters.maxPrice = params.get('precio_max');
+        if (params.get('busqueda')) currentFilters.busqueda = params.get('busqueda');
+        updateURL();
+        loadProducts();
+        localStorage.removeItem('catalogo_return_state');
+    }
+
+    // Evento popstate para cuando el usuario navega hacia atrás/adelante
+    window.addEventListener('popstate', () => {
+        // Recargar la página para que tome los parámetros de la URL actual
+        location.reload();
+    });
 
     function escapeHtml(str) {
         return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));

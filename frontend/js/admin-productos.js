@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalPages = 1;
     const itemsPerPage = 12;
 
-    // Elementos DOM
+    // Elementos DOM (con protección por si alguno no existe)
     const modal = document.getElementById('productModal');
     const modalTitle = document.getElementById('modalTitle');
     const formModal = document.getElementById('productFormModal');
@@ -47,12 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewSecundarias = document.getElementById('previewSecundarias');
     const modalActivo = document.getElementById('modalActivo');
     const modalDestacado = document.getElementById('modalDestacado');
-    const tallasCheckboxes = document.querySelectorAll('.tallas-checkbox-group input[type="checkbox"]');
+    // Para tallas usamos .tallas-grid (clase corregida en HTML)
+    const tallasCheckboxes = document.querySelectorAll('.tallas-grid input[type="checkbox"]');
 
     const productsGrid = document.getElementById('productsGrid');
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
-    const seasonFilter = document.getElementById('seasonFilter'); // no se usa, pero no da error
+    const seasonFilter = document.getElementById('seasonFilter'); // puede ser null, se protege
     const statusFilter = document.getElementById('statusFilter');
     const sortBy = document.getElementById('sortBy');
     const paginationDiv = document.getElementById('pagination');
@@ -62,12 +63,18 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch(`${API_BASE}/categorias`);
             const cats = await res.json();
-            modalCategoria.innerHTML = '<option value="">Seleccionar</option>';
-            categoryFilter.innerHTML = '<option value="all">Todas las categorías</option>';
-            cats.forEach(c => {
-                modalCategoria.innerHTML += `<option value="${c.id}">${escapeHtml(c.nombre)}</option>`;
-                categoryFilter.innerHTML += `<option value="${c.id}">${escapeHtml(c.nombre)}</option>`;
-            });
+            if (modalCategoria) {
+                modalCategoria.innerHTML = '<option value="">Seleccionar</option>';
+                cats.forEach(c => {
+                    modalCategoria.innerHTML += `<option value="${c.id}">${escapeHtml(c.nombre)}</option>`;
+                });
+            }
+            if (categoryFilter) {
+                categoryFilter.innerHTML = '<option value="all">Todas las categorías</option>';
+                cats.forEach(c => {
+                    categoryFilter.innerHTML += `<option value="${c.id}">${escapeHtml(c.nombre)}</option>`;
+                });
+            }
         } catch (error) {
             console.error('Error cargando categorías:', error);
         }
@@ -77,11 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch(`${API_BASE}/temporadas`);
             const temps = await res.json();
-            modalTemporada.innerHTML = '<option value="">Sin temporada</option>';
-            // No llenamos seasonFilter porque no existe en el HTML
-            temps.forEach(t => {
-                modalTemporada.innerHTML += `<option value="${t.id}">${escapeHtml(t.nombre)}</option>`;
-            });
+            if (modalTemporada) {
+                modalTemporada.innerHTML = '<option value="">Sin temporada</option>';
+                temps.forEach(t => {
+                    modalTemporada.innerHTML += `<option value="${t.id}">${escapeHtml(t.nombre)}</option>`;
+                });
+            }
         } catch (error) {
             console.error('Error cargando temporadas:', error);
         }
@@ -91,13 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadProductos() {
         try {
             const params = new URLSearchParams();
-            const search = searchInput.value.trim();
+            const search = searchInput?.value.trim() || '';
             if (search) params.append('busqueda', search);
-            const categoria = categoryFilter.value;
-            if (categoria !== 'all') params.append('categoria', categoria);
-            const estado = statusFilter.value;
-            if (estado !== 'all') params.append('activo', estado);
-            const orden = sortBy.value;
+            const categoria = categoryFilter?.value;
+            if (categoria && categoria !== 'all') params.append('categoria', categoria);
+            const estado = statusFilter?.value;
+            if (estado && estado !== 'all') params.append('activo', estado);
+            const orden = sortBy?.value;
             if (orden) params.append('orden', orden);
             params.append('pagina', currentPage);
             params.append('limite', itemsPerPage);
@@ -111,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
             renderPagination();
         } catch (error) {
             console.error(error);
-            productsGrid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px;">Error al cargar productos. ¿El backend está corriendo?</div>';
-            paginationDiv.innerHTML = '';
+            if (productsGrid) productsGrid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px;">Error al cargar productos. ¿El backend está corriendo?</div>';
+            if (paginationDiv) paginationDiv.innerHTML = '';
         }
     }
 
@@ -228,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     modalNombre.value = prod.nombre || '';
                     modalCategoria.value = prod.categoria_id || '';
                     modalPrecio.value = prod.precio || '';
-                    modalTemporada.value = prod.temporada_id || '';
+                    if (modalTemporada) modalTemporada.value = prod.temporada_id || '';
                     modalDescripcion.value = prod.descripcion || '';
                     modalActivo.checked = prod.activo === 1;
                     modalDestacado.checked = prod.destacado === 1;
@@ -255,17 +263,17 @@ document.addEventListener('DOMContentLoaded', () => {
             previewSecundarias.innerHTML = '';
             tallasCheckboxes.forEach(cb => cb.checked = false);
         }
-        modal.style.display = 'flex';
+        if (modal) modal.style.display = 'flex';
     }
 
     function closeModal() {
-        modal.style.display = 'none';
+        if (modal) modal.style.display = 'none';
         currentEditId = null;
-        formModal.reset();
-        previewPrincipal.innerHTML = '';
-        previewSecundarias.innerHTML = '';
-        modalFotoPrincipal.value = '';
-        modalFotosSecundarias.value = '';
+        if (formModal) formModal.reset();
+        if (previewPrincipal) previewPrincipal.innerHTML = '';
+        if (previewSecundarias) previewSecundarias.innerHTML = '';
+        if (modalFotoPrincipal) modalFotoPrincipal.value = '';
+        if (modalFotosSecundarias) modalFotosSecundarias.value = '';
     }
 
     async function saveProduct(event) {
@@ -303,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
             nombre: modalNombre.value.trim(),
             categoria_id: parseInt(modalCategoria.value),
             precio: parseFloat(modalPrecio.value),
-            temporada_id: modalTemporada.value ? parseInt(modalTemporada.value) : null,
+            temporada_id: modalTemporada ? (modalTemporada.value ? parseInt(modalTemporada.value) : null) : null,
             descripcion: modalDescripcion.value.trim(),
             imagen: imagenPrincipal,
             fotos: fotosArray,
@@ -340,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==================== MODAL VER PRODUCTO (con combos) ====================
+    // ==================== MODAL VER PRODUCTO ====================
     async function openViewModal(productId) {
         try {
             const response = await fetch(`${API_BASE}/productos/${productId}`);
@@ -366,12 +374,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (e) { console.warn('Error cargando combos:', e); }
 
-            // Construir galería de 4 fotos
+            // Galería de 4 fotos
             const todasFotos = [];
             if (product.imagen_principal) todasFotos.push(product.imagen_principal);
-            if (product.fotos && product.fotos.length) {
-                todasFotos.push(...product.fotos.slice(0, 3));
-            }
+            if (product.fotos && product.fotos.length) todasFotos.push(...product.fotos.slice(0, 3));
             while (todasFotos.length < 4) todasFotos.push(todasFotos[0] || 'https://placehold.co/400x400?text=Sin+imagen');
 
             const fotosHtml = todasFotos.map((url, idx) => `
@@ -411,31 +417,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const tallasHtml = product.tallas ? `<div class="modal-tallas"><strong>Tallas:</strong> ${escapeHtml(product.tallas.split(',').join(', '))}</div>` : '';
 
             const viewBody = document.getElementById('viewProductBody');
-            viewBody.innerHTML = `
-                <div class="modal-product-container">
-                    <div class="modal-gallery">
-                        ${fotosHtml}
-                    </div>
-                    <div class="modal-info">
-                        <h2>${escapeHtml(product.nombre)}</h2>
-                        <p class="modal-category">${escapeHtml(product.categoria_nombre || 'Sin categoría')}</p>
-                        ${estrellasHtml}
-                        ${precioHtml}
-                        <p class="modal-description">${escapeHtml(product.descripcion || 'Sin descripción')}</p>
-                        ${tallasHtml}
-                        ${combosHtml}
-                        <div class="modal-meta">
-                            <span><i class="fas fa-eye"></i> ${product.visitas || 0}</span>
-                            <span><i class="fas fa-heart"></i> ${product.favoritos || 0}</span>
-                            <span><i class="fas fa-calendar-alt"></i> ${new Date(product.fecha_publicacion).toLocaleDateString()}</span>
+            if (viewBody) {
+                viewBody.innerHTML = `
+                    <div class="modal-product-container">
+                        <div class="modal-gallery">
+                            ${fotosHtml}
                         </div>
-                        <div class="modal-status">
-                            <span class="status-badge ${product.activo ? 'active' : 'inactive'}">${product.activo ? 'Activo' : 'Oculto'}</span>
-                            ${product.destacado ? '<span class="status-badge featured">Destacado</span>' : ''}
+                        <div class="modal-info">
+                            <h2>${escapeHtml(product.nombre)}</h2>
+                            <p class="modal-category">${escapeHtml(product.categoria_nombre || 'Sin categoría')}</p>
+                            ${estrellasHtml}
+                            ${precioHtml}
+                            <p class="modal-description">${escapeHtml(product.descripcion || 'Sin descripción')}</p>
+                            ${tallasHtml}
+                            ${combosHtml}
+                            <div class="modal-meta">
+                                <span><i class="fas fa-eye"></i> ${product.visitas || 0}</span>
+                                <span><i class="fas fa-heart"></i> ${product.favoritos || 0}</span>
+                                <span><i class="fas fa-calendar-alt"></i> ${new Date(product.fecha_publicacion).toLocaleDateString()}</span>
+                            </div>
+                            <div class="modal-status">
+                                <span class="status-badge ${product.activo ? 'active' : 'inactive'}">${product.activo ? 'Activo' : 'Oculto'}</span>
+                                ${product.destacado ? '<span class="status-badge featured">Destacado</span>' : ''}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
 
             document.querySelectorAll('.modal-foto-item').forEach(foto => {
                 foto.addEventListener('click', () => {
@@ -443,7 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            document.getElementById('viewProductModal').style.display = 'flex';
+            const viewModal = document.getElementById('viewProductModal');
+            if (viewModal) viewModal.style.display = 'flex';
         } catch (error) {
             console.error(error);
             alert('Error al cargar los detalles del producto');
@@ -451,7 +460,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeViewModal() {
-        document.getElementById('viewProductModal').style.display = 'none';
+        const viewModal = document.getElementById('viewProductModal');
+        if (viewModal) viewModal.style.display = 'none';
     }
 
     // ==================== ACCIONES ====================
@@ -498,49 +508,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 
-    searchInput.addEventListener('input', applyFilters);
-    categoryFilter.addEventListener('change', () => { currentPage = 1; loadProductos(); });
-    // NO se usa seasonFilter porque no existe en el HTML
-    statusFilter.addEventListener('change', () => { currentPage = 1; loadProductos(); });
-    sortBy.addEventListener('change', () => { currentPage = 1; loadProductos(); });
-    productsGrid.addEventListener('click', handleProductActions);
-    addProductBtn.addEventListener('click', () => openModal(null));
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelModalBtn.addEventListener('click', closeModal);
-    formModal.addEventListener('submit', saveProduct);
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (categoryFilter) categoryFilter.addEventListener('change', () => { currentPage = 1; loadProductos(); });
+    if (statusFilter) statusFilter.addEventListener('change', () => { currentPage = 1; loadProductos(); });
+    if (sortBy) sortBy.addEventListener('change', () => { currentPage = 1; loadProductos(); });
+    if (productsGrid) productsGrid.addEventListener('click', handleProductActions);
+    if (addProductBtn) addProductBtn.addEventListener('click', () => openModal(null));
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
+    if (formModal) formModal.addEventListener('submit', saveProduct);
 
     const closeViewModalBtn = document.getElementById('closeViewModalBtn');
     const closeViewModalBtns = document.querySelectorAll('.close-view-modal');
     if (closeViewModalBtn) closeViewModalBtn.addEventListener('click', closeViewModal);
     closeViewModalBtns.forEach(btn => btn.addEventListener('click', closeViewModal));
 
-    modalFotoPrincipal.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                previewPrincipal.innerHTML = `<img src="${ev.target.result}" style="width:70px; height:70px; object-fit:cover; border-radius:16px;">`;
-            };
-            reader.readAsDataURL(file);
-        } else {
-            previewPrincipal.innerHTML = '';
-        }
-    });
-
-    modalFotosSecundarias.addEventListener('change', (e) => {
-        const files = Array.from(e.target.files);
-        previewSecundarias.innerHTML = '';
-        files.slice(0, 3).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const img = document.createElement('img');
-                img.src = ev.target.result;
-                img.style.cssText = 'width:70px; height:70px; object-fit:cover; border-radius:16px;';
-                previewSecundarias.appendChild(img);
-            };
-            reader.readAsDataURL(file);
+    if (modalFotoPrincipal) {
+        modalFotoPrincipal.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    if (previewPrincipal) previewPrincipal.innerHTML = `<img src="${ev.target.result}" style="width:70px; height:70px; object-fit:cover; border-radius:16px;">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                if (previewPrincipal) previewPrincipal.innerHTML = '';
+            }
         });
-    });
+    }
+
+    if (modalFotosSecundarias) {
+        modalFotosSecundarias.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (previewSecundarias) previewSecundarias.innerHTML = '';
+            files.slice(0, 3).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    img.style.cssText = 'width:70px; height:70px; object-fit:cover; border-radius:16px;';
+                    if (previewSecundarias) previewSecundarias.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
 
     // Sidebar y logout
     const menuToggle = document.getElementById('menuToggle');
@@ -548,12 +561,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeSidebar = document.getElementById('closeSidebar');
     if (menuToggle) {
         menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-        closeSidebar.addEventListener('click', () => sidebar.classList.remove('open'));
+        if (closeSidebar) closeSidebar.addEventListener('click', () => sidebar.classList.remove('open'));
     }
-    document.getElementById('logoutBtn')?.addEventListener('click', () => {
-        sessionStorage.removeItem('admin_logged');
-        window.location.href = 'login.html';
-    });
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('admin_logged');
+            window.location.href = 'login.html';
+        });
+    }
 
     function escapeHtml(str) {
         return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));

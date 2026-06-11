@@ -1,7 +1,15 @@
+const path = require('path');
+require('dotenv').config({
+    path: path.join(__dirname, '../.env')
+});
+
 const mysql = require('mysql2/promise');
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
+
+console.log('HOST:', process.env.DB_HOST);
+console.log('USER:', process.env.DB_USER);
+console.log('PASS:', process.env.DB_PASSWORD);
+console.log('PORT:', process.env.DB_PORT);
+console.log('DB:', process.env.DB_NAME);
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,

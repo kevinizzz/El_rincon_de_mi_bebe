@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
+// Función auxiliar para registrar actividades del administrador
+async function registrarActividadAdmin(accion, descripcion) {
+    try {
+        await db.query(
+            'INSERT INTO actividades_admin (accion, descripcion) VALUES (?, ?)',
+            [accion, descripcion]
+        );
+    } catch (error) {
+        console.error('Error registrando actividad:', error);
+    }
+}
+
 // ==================== OBTENER PRODUCTOS ====================
 router.get('/', async (req, res) => {
     try {
@@ -81,7 +93,6 @@ router.get('/', async (req, res) => {
             params.push(activo === '1' ? 1 : 0);
         }
 
-        // Ordenamiento
         let orderBy = '';
         switch (orden) {
             case 'popular':
@@ -97,17 +108,18 @@ router.get('/', async (req, res) => {
             case 'rating':
                 orderBy = ' ORDER BY rating_promedio IS NULL, rating_promedio DESC';
                 break;
+            case 'favoritos':
+                orderBy = ' ORDER BY p.favoritos DESC';
+                break;
             default:
                 orderBy = ' ORDER BY p.fecha_publicacion DESC';
         }
 
-        // Contar total
         const [countResult] = await db.query(`SELECT COUNT(*) as total FROM productos p ${whereClause}`, params);
         const totalRegistros = countResult[0].total;
         const totalPaginas = Math.ceil(totalRegistros / limite);
         const offset = (parseInt(pagina) - 1) * parseInt(limite);
 
-        // Consulta principal
         const query = `
             SELECT p.*,
                    c.nombre as categoria_nombre,
@@ -129,7 +141,6 @@ router.get('/', async (req, res) => {
         `;
         const [productos] = await db.query(query, [...params, parseInt(limite), offset]);
 
-        // Promociones activas
         const hoy = new Date().toISOString().split('T')[0];
         const [promocionesActivas] = await db.query(
             `SELECT * FROM promociones WHERE activa = 1 AND fecha_inicio <= ? AND fecha_fin >= ?`,
@@ -138,18 +149,178 @@ router.get('/', async (req, res) => {
 
         const productosConDescuento = [];
         for (const prod of productos) {
-            // NUEVA LÓGICA: solo una promoción, no suma
             let descuentoTotal = 0;
-            // 1. Buscar promoción específica del producto
+            // Prioridad: promoción por producto > promoción por categoría
             let promoProducto = promocionesActivas.find(promo => promo.producto_id === prod.id);
             if (promoProducto) {
                 descuentoTotal = promoProducto.descuento;
             } else {
-                // 2. Buscar promoción por categoría
                 let promoCat = promocionesActivas.find(promo => promo.categoria_id === prod.categoria_id);
-                if (promoCat) {
-                    descuentoTotal = promoCat.descuento;
-                }
+                if (promoCat) descuentoTotal = promoCat.descuento;
+            }
+            if (descuentoTotal > 100) descuentoTotal = 100;
+            const precioConDescuento = prod.precio * (1 - descuentoTotal / 100);
+            const fotos = prod.fotos_concat ? prod.fotos_concat.split('|') : [];
+            productosConDescuento.push({
+                ...prod,
+                fotos: fotos,
+                descuento_total: descuentoTotal,
+                precio_con_descuento: precioConDescuento.toFixed(2)
+            });
+        }
+        res.json({
+            data: productosConDescuento,
+            total: totalRegistros,
+            page: parseInt(pagina),
+            limit: parseInt(limite),
+            totalPages: totalPaginas
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+// ==================== OBTENER PRODUCTOS ====================
+router.get('/', async (req, res) => {
+    try {
+        let {
+            categoria,
+            tallas,
+            precio_min,
+            precio_max,
+            precios,
+            colores,
+            orden,
+            pagina = 1,
+            limite = 12,
+            busqueda = '',
+            destacado,
+            activo
+        } = req.query;
+
+        let whereClause = ' WHERE 1=1';
+        const params = [];
+
+        if (categoria && categoria !== 'all') {
+            whereClause += ' AND p.categoria_id = ?';
+            params.push(categoria);
+        }
+        if (busqueda) {
+            whereClause += ' AND p.nombre LIKE ?';
+            params.push(`%${busqueda}%`);
+        }
+        if (tallas) {
+            const tallasArray = tallas.split(',');
+            const tallasCond = tallasArray.map(() => 'p.talla LIKE ?').join(' OR ');
+            whereClause += ` AND (${tallasCond})`;
+            tallasArray.forEach(t => params.push(`%${t}%`));
+        }
+        if (precio_min !== undefined || precio_max !== undefined) {
+            const min = parseFloat(precio_min);
+            const max = parseFloat(precio_max);
+            if (!isNaN(min) && !isNaN(max)) {
+                whereClause += ' AND p.precio BETWEEN ? AND ?';
+                params.push(min, max);
+            } else if (!isNaN(min)) {
+                whereClause += ' AND p.precio >= ?';
+                params.push(min);
+            } else if (!isNaN(max)) {
+                whereClause += ' AND p.precio <= ?';
+                params.push(max);
+            }
+        } else if (precios) {
+            const rangos = precios.split(',');
+            const precioCond = rangos.map(rango => {
+                const [min, max] = rango.split('-');
+                if (max === '999999') return `p.precio >= ?`;
+                return `(p.precio BETWEEN ? AND ?)`;
+            }).join(' OR ');
+            whereClause += ` AND (${precioCond})`;
+            rangos.forEach(rango => {
+                const [min, max] = rango.split('-');
+                if (max === '999999') params.push(parseFloat(min));
+                else params.push(parseFloat(min), parseFloat(max));
+            });
+        }
+        if (colores) {
+            const coloresArray = colores.split(',');
+            const colorCond = coloresArray.map(() => 'p.color = ?').join(' OR ');
+            whereClause += ` AND (${colorCond})`;
+            coloresArray.forEach(c => params.push(c));
+        }
+        if (destacado !== undefined) {
+            whereClause += ' AND p.destacado = ?';
+            params.push(destacado === '1' ? 1 : 0);
+        }
+        if (activo === undefined) {
+            whereClause += ' AND p.activo = 1';
+        } else if (activo !== 'todos') {
+            whereClause += ' AND p.activo = ?';
+            params.push(activo === '1' ? 1 : 0);
+        }
+
+        let orderBy = '';
+        switch (orden) {
+            case 'popular':
+            case 'views':
+                orderBy = ' ORDER BY p.visitas DESC';
+                break;
+            case 'price_asc':
+                orderBy = ' ORDER BY p.precio ASC';
+                break;
+            case 'price_desc':
+                orderBy = ' ORDER BY p.precio DESC';
+                break;
+            case 'rating':
+                orderBy = ' ORDER BY rating_promedio IS NULL, rating_promedio DESC';
+                break;
+            default:
+                orderBy = ' ORDER BY p.fecha_publicacion DESC';
+        }
+
+        const [countResult] = await db.query(`SELECT COUNT(*) as total FROM productos p ${whereClause}`, params);
+        const totalRegistros = countResult[0].total;
+        const totalPaginas = Math.ceil(totalRegistros / limite);
+        const offset = (parseInt(pagina) - 1) * parseInt(limite);
+
+        const query = `
+            SELECT p.*,
+                   c.nombre as categoria_nombre,
+                   t.nombre as temporada_nombre,
+                   (SELECT imagen_url FROM producto_imagenes WHERE producto_id = p.id AND es_principal = 1 LIMIT 1) as imagen_principal,
+                   (SELECT GROUP_CONCAT(imagen_url SEPARATOR '|') FROM producto_imagenes WHERE producto_id = p.id AND es_principal = 0) as fotos_concat,
+                   (SELECT ROUND(AVG(puntuacion), 1) FROM calificaciones WHERE producto_id = p.id) as rating_promedio,
+                   (SELECT COUNT(*) FROM calificaciones WHERE producto_id = p.id) as rating_total,
+                   (SELECT COUNT(*) > 0 FROM combo_productos cp 
+                    JOIN promociones_combo pc ON cp.combo_id = pc.id 
+                    WHERE cp.producto_id = p.id AND pc.activa = 1 
+                    AND pc.fecha_inicio <= NOW() AND pc.fecha_fin >= NOW()) as en_combo
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN temporadas t ON p.temporada_id = t.id
+            ${whereClause}
+            ${orderBy}
+            LIMIT ? OFFSET ?
+        `;
+        const [productos] = await db.query(query, [...params, parseInt(limite), offset]);
+
+        const hoy = new Date().toISOString().split('T')[0];
+        const [promocionesActivas] = await db.query(
+            `SELECT * FROM promociones WHERE activa = 1 AND fecha_inicio <= ? AND fecha_fin >= ?`,
+            [hoy, hoy]
+        );
+
+        const productosConDescuento = [];
+        for (const prod of productos) {
+            let descuentoTotal = 0;
+            let promoProducto = promocionesActivas.find(promo => promo.producto_id === prod.id);
+            if (promoProducto) {
+                descuentoTotal = promoProducto.descuento;
+            } else {
+                let promoCat = promocionesActivas.find(promo => promo.categoria_id === prod.categoria_id);
+                if (promoCat) descuentoTotal = promoCat.descuento;
             }
             if (descuentoTotal > 100) descuentoTotal = 100;
             const precioConDescuento = prod.precio * (1 - descuentoTotal / 100);
@@ -206,16 +377,13 @@ router.get('/:id', async (req, res) => {
             [hoy, hoy]
         );
 
-        // NUEVA LÓGICA: solo una promoción, prioridad producto > categoría
         let descuentoTotal = 0;
         let promoProducto = promocionesActivas.find(promo => promo.producto_id === producto.id);
         if (promoProducto) {
             descuentoTotal = promoProducto.descuento;
         } else {
             let promoCat = promocionesActivas.find(promo => promo.categoria_id === producto.categoria_id);
-            if (promoCat) {
-                descuentoTotal = promoCat.descuento;
-            }
+            if (promoCat) descuentoTotal = promoCat.descuento;
         }
         if (descuentoTotal > 100) descuentoTotal = 100;
         producto.descuento_total = descuentoTotal;
@@ -278,6 +446,7 @@ router.post('/', async (req, res) => {
                 await db.query('INSERT INTO producto_imagenes (producto_id, imagen_url, es_principal) VALUES (?, ?, 0)', [productoId, url]);
             }
         }
+        await registrarActividadAdmin('crear_producto', `Producto agregado: ${nombre} (ID ${productoId})`);
         res.status(201).json({ id: productoId, message: 'Producto creado' });
     } catch (error) {
         console.error(error);
@@ -304,6 +473,7 @@ router.put('/:id', async (req, res) => {
                 await db.query('INSERT INTO producto_imagenes (producto_id, imagen_url, es_principal) VALUES (?, ?, 0)', [id, url]);
             }
         }
+        await registrarActividadAdmin('editar_producto', `Producto actualizado: ${nombre} (ID ${id})`);
         res.json({ message: 'Producto actualizado' });
     } catch (error) {
         console.error(error);
@@ -315,9 +485,13 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        const [producto] = await db.query('SELECT nombre FROM productos WHERE id = ?', [id]);
+        const nombre = producto.length ? producto[0].nombre : `ID ${id}`;
         await db.query('DELETE FROM productos WHERE id = ?', [id]);
+        await registrarActividadAdmin('eliminar_producto', `Producto eliminado: ${nombre}`);
         res.json({ message: 'Producto eliminado' });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 });

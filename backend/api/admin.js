@@ -50,4 +50,45 @@ router.get('/verificar', (req, res) => {
     }
 });
 
+// Obtener actividades recientes del administrador
+router.get('/actividades', async (req, res) => {
+    try {
+        const { limite = 10 } = req.query;
+        const [rows] = await db.query(
+            `SELECT * FROM actividades_admin ORDER BY fecha DESC LIMIT ?`,
+            [parseInt(limite)]
+        );
+        // Formatear tiempo relativo
+        const actividades = rows.map(a => ({
+            texto: a.accion,
+            detalle: a.descripcion,
+            tiempo: timeAgo(new Date(a.fecha)),
+            icono: getIconoActividad(a.accion)
+        }));
+        res.json(actividades);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+function timeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    if (seconds < 60) return 'hace unos segundos';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `hace ${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `hace ${hours} ${hours === 1 ? 'hora' : 'horas'}`;
+    const days = Math.floor(hours / 24);
+    return `hace ${days} ${days === 1 ? 'día' : 'días'}`;
+}
+
+function getIconoActividad(accion) {
+    if (accion.includes('crear')) return 'fas fa-plus-circle';
+    if (accion.includes('editar')) return 'fas fa-edit';
+    if (accion.includes('eliminar')) return 'fas fa-trash-alt';
+    if (accion.includes('promocion')) return 'fas fa-percent';
+    if (accion.includes('combo')) return 'fas fa-gift';
+    return 'fas fa-user-cog';
+}
+
 module.exports = router;

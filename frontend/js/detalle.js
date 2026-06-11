@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const productoId = urlParams.get('id');
     const container = document.getElementById('productoDetalle');
 
+    let esFavorito = false;  // estado actual del favorito
+
     if (!productoId) {
         container.innerHTML = '<div style="text-align:center; padding:40px;">Producto no especificado</div><a href="catalogo.html" class="boton">Volver al catálogo</a>';
         return;
@@ -15,25 +17,88 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!res.ok) throw new Error('Producto no encontrado');
         const p = await res.json();
 
-        // Renderizar la estructura con miniaturas, imagen principal, etc.
+        // Verificar si el producto está en favoritos (usando el endpoint /favoritos)
+        esFavorito = await verificarFavorito(productoId);
+
+        // Renderizar la vista del producto
         renderProducto(p);
-        // Cargar calificaciones y estrellas
         cargarPromedio(productoId);
         cargarMiCalificacion(productoId);
-        // Cargar productos relacionados (misma categoría)
         cargarRelacionados(p.categoria_id, productoId);
-        // Inicializar eventos de favorito y WhatsApp
         inicializarEventos(p);
 
     } catch (error) {
         container.innerHTML = `<div style="text-align:center; padding:40px;">Producto no encontrado</div><a href="catalogo.html" class="boton">Volver al catálogo</a>`;
     }
 
+    // ========== FUNCIONES DE FAVORITOS ==========
+    async function verificarFavorito(productId) {
+        const session_uuid = localStorage.getItem('session_uuid');
+        if (!session_uuid) return false;
+        try {
+            const res = await fetch(`${API_BASE}/favoritos?session_uuid=${session_uuid}`);
+            if (!res.ok) return false;
+            const favoritos = await res.json();
+            return favoritos.some(fav => fav.id == productId);
+        } catch (error) {
+            console.error('Error al verificar favorito:', error);
+            return false;
+        }
+    }
+
+    function actualizarBotonFavorito(estado) {
+        const favBtn = document.getElementById('favoritoBtn');
+        if (favBtn) {
+            if (estado) {
+                favBtn.innerHTML = '<i class="fas fa-heart" style="color:#ff9a9e;"></i>';
+                favBtn.classList.add('activo');
+            } else {
+                favBtn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+                favBtn.classList.remove('activo');
+            }
+        }
+    }
+
+    async function toggleFavorito(productId) {
+        const session_uuid = localStorage.getItem('session_uuid');
+        if (!session_uuid) {
+            alert('Debes iniciar sesión para guardar favoritos');
+            return;
+        }
+        const nuevaEstado = !esFavorito;
+        try {
+            const res = await fetch(`${API_BASE}/favoritos/toggle`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_uuid,
+                    producto_id: productId,
+                    agregar: nuevaEstado
+                })
+            });
+            if (res.ok) {
+                esFavorito = nuevaEstado;
+                actualizarBotonFavorito(esFavorito);
+                // Registrar interacción (opcional)
+                if (window.registrarInteraccion) {
+                    window.registrarInteraccion(nuevaEstado ? 'agregar_favorito' : 'quitar_favorito', productId);
+                }
+            } else {
+                const err = await res.json();
+                alert('Error al guardar favorito: ' + (err.error || 'Intenta más tarde'));
+            }
+        } catch (error) {
+            console.error('Error al toggle favorito:', error);
+            alert('Error de conexión');
+        }
+    }
+
+    // ========== RENDERIZADO DEL PRODUCTO ==========
     function renderProducto(p) {
-        // Prepara imágenes: principal y secundarias (hasta 4 fotos incluyendo principal)
+        // Preparar imágenes
         const imagenes = [];
         if (p.imagen_principal) imagenes.push(p.imagen_principal);
-        if (p.fotos && p.fotos.length) imagenes.push(...p.fotos.slice(0, 3)); // máximo 4 en total
+        if (p.fotos && p.fotos.length) imagenes.push(...p.fotos.slice(0, 3));
 
         const miniaturasHtml = imagenes.map((img, idx) => `
             <button class="miniatura_producto ${idx === 0 ? 'activa' : ''}" data-img="${img}">
@@ -58,7 +123,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         ` : '<p>Sin tallas disponibles</p>';
 
-        // Información principal
         container.innerHTML = `
             <div class="miniaturas_producto" id="miniaturasContainer">
                 ${miniaturasHtml}
@@ -97,7 +161,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `;
 
-        // Galería: cambiar imagen principal al hacer clic en miniatura
+        // Actualizar el botón según el estado obtenido
+        actualizarBotonFavorito(esFavorito);
+
+        // Evento de cambio de imagen en miniaturas
         document.querySelectorAll('.miniatura_producto').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.miniatura_producto').forEach(b => b.classList.remove('activa'));
@@ -106,11 +173,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.getElementById('imagenPrincipal').src = nuevaImg;
             });
         });
-
-        // Breadcrumb: mostrar categoría
-        document.getElementById('breadcrumbCategoria').innerText = p.categoria_nombre || 'Producto';
     }
 
+    // ========== CALIFICACIONES ==========
     async function cargarPromedio(id) {
         try {
             const res = await fetch(`${API_BASE}/calificaciones/producto/${id}`);
@@ -166,6 +231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.valorSeleccionado = valor;
     }
 
+    // ========== EVENTOS ==========
     function inicializarEventos(p) {
         // Estrellas de calificación
         const estrellas = document.querySelectorAll('.estrellas-usuario .estrella');
@@ -185,16 +251,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         document.getElementById('btnCalificar')?.addEventListener('click', () => enviarCalificacion(p.id));
 
-        // Favorito (solo simulación visual, la interacción se registra en backend)
+        // Botón favorito
         const favBtn = document.getElementById('favoritoBtn');
         if (favBtn) {
-            favBtn.addEventListener('click', () => {
-                if (window.registrarInteraccion) {
-                    window.registrarInteraccion('agregar_favorito', p.id);
-                }
-                favBtn.innerHTML = '<i class="fas fa-heart" style="color:#ff9a9e;"></i>';
-                alert('Producto añadido a favoritos');
-            });
+            favBtn.addEventListener('click', () => toggleFavorito(p.id));
         }
 
         // WhatsApp
@@ -206,6 +266,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // ========== PRODUCTOS RELACIONADOS ==========
     async function cargarRelacionados(categoriaId, productoActualId) {
         if (!categoriaId) return;
         try {
@@ -215,6 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             productos = productos.filter(p => p.id != productoActualId).slice(0, 4);
             const grid = document.getElementById('productosRelacionadosGrid');
             const section = document.getElementById('relacionadosSection');
+            if (!grid || !section) return;
             if (productos.length === 0) {
                 section.style.display = 'none';
                 return;
@@ -235,6 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch(e) { console.error('Error cargando relacionados:', e); }
     }
 
+    // ========== UTILIDADES ==========
     function generarEstrellas(promedio, total) {
         if (total === 0) return '<span>Sin opiniones</span>';
         const estrellaLlena = '<i class="fas fa-star"></i>';
