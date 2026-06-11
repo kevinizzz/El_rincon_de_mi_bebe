@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         adminAvatar.textContent = adminData.nombre ? adminData.nombre.charAt(0).toUpperCase() : 'A';
     }
 
-const API_BASE = 'https://elrincondemibebe-production.up.railway.app/backend/api';
+    // ✅ CORREGIDO: eliminar '/backend' de la URL
+    const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
     // Elementos DOM
     const metricsGrid = document.getElementById('metricsGrid');
@@ -120,7 +121,13 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/backend/api
             // Productos
             const productosRes = await fetch(`${API_BASE}/productos?limite=10000`);
             const productosData = await productosRes.json();
-            const productos = productosData.data || [];
+            // Robustez: si es array plano, convertimos a {data}
+            let productos = [];
+            if (Array.isArray(productosData)) {
+                productos = productosData;
+            } else if (productosData.data && Array.isArray(productosData.data)) {
+                productos = productosData.data;
+            }
             const totalProductos = productos.length;
             const haceUnMes = new Date();
             haceUnMes.setMonth(haceUnMes.getMonth() - 1);
@@ -128,7 +135,10 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/backend/api
 
             // Promociones activas y nuevas este mes
             const promosRes = await fetch(`${API_BASE}/promociones?activa=1`);
-            const promosActivas = await promosRes.json();
+            let promosActivas = [];
+            if (promosRes.ok) {
+                promosActivas = await promosRes.json();
+            }
             const totalPromos = promosActivas.length;
             const nuevasPromos = promosActivas.filter(p => new Date(p.fecha_inicio) >= haceUnMes).length;
 
@@ -145,7 +155,6 @@ const API_BASE = 'https://elrincondemibebe-production.up.railway.app/backend/api
 
             const totalFavoritos = productos.reduce((sum, p) => sum + (p.favoritos || 0), 0);
             const destacados = productos.filter(p => p.destacado === 1).length;
-            // Productos destacados nuevos este mes (los que se publicaron en el último mes Y son destacados)
             const nuevosDestacados = productos.filter(p => p.destacado === 1 && new Date(p.fecha_publicacion) >= haceUnMes).length;
 
             let consultasWhatsApp = 0;
