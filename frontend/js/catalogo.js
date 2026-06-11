@@ -1,6 +1,6 @@
 // catalogo.js
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
     // Leer parámetros de la URL al cargar
     const urlParams = new URLSearchParams(window.location.search);

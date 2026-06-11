@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (!sessionStorage.getItem('admin_logged')) window.location.href = 'login.html';
 
-    const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
     const IMGBB_API_KEY = 'e583e786cd21089f399a5d150447152e';
     const IMGBB_UPLOAD_URL = 'https://api.imgbb.com/1/upload';
 

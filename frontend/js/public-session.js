@@ -1,5 +1,5 @@
 // public-session.js
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
 // Obtener o generar session_uuid
 let session_uuid = localStorage.getItem('session_uuid');

@@ -1,6 +1,6 @@
 // detalle.js
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
     const urlParams = new URLSearchParams(window.location.search);
     const productoId = urlParams.get('id');
     const container = document.getElementById('productoDetalle');

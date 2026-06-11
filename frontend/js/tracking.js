@@ -1,6 +1,6 @@
 // tracking.js
 (function() {
-    const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
     let sessionUUID = localStorage.getItem('session_uuid');
     let sessionId = null;
 
