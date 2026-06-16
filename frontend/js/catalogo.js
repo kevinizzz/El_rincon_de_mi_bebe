@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
-    // Leer parámetros de la URL al cargar (solo una vez)
+    // Leer parámetros de la URL al cargar
     const urlParams = new URLSearchParams(window.location.search);
     const initialFilters = {
         categoria: urlParams.get('categoria') || null,
@@ -77,39 +77,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ========== CARGAR PRODUCTOS ==========
+    // ========== CARGAR PRODUCTOS (CORREGIDO: con filtros y sin duplicación) ==========
     async function loadProducts() {
-async function loadProducts() {
-    try {
-        const params = new URLSearchParams();
+        try {
+            const params = new URLSearchParams();
+            params.append('pagina', currentPage);
+            params.append('limite', 12);
 
-        params.append('pagina', currentPage);
-        params.append('limite', 12);
+            // Filtros (restaurados)
+            if (currentFilters.categoria) params.append('categoria', currentFilters.categoria);
+            if (currentFilters.orden) params.append('orden', currentFilters.orden);
+            if (currentFilters.minPrice !== '') params.append('precio_min', currentFilters.minPrice);
+            if (currentFilters.maxPrice !== '') params.append('precio_max', currentFilters.maxPrice);
+            if (currentFilters.busqueda !== '') params.append('busqueda', currentFilters.busqueda);
 
-        console.log('URL:', `${API_BASE}/productos?${params}`);
+            const res = await fetch(`${API_BASE}/productos?${params}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
 
-        const res = await fetch(`${API_BASE}/productos?${params}`);
-        const data = await res.json();
-
-        console.log('Respuesta API:', data);
-
-        let productos = [];
-
-        if (data.data && Array.isArray(data.data)) {
-            productos = data.data;
-            totalPages = data.totalPages || 1;
+            let productos = [];
+            if (data.data && Array.isArray(data.data)) {
+                productos = data.data;
+                totalPages = data.totalPages || 1;
+            } else if (Array.isArray(data)) {
+                productos = data;
+                totalPages = Math.ceil(productos.length / 12);
+            } else {
+                throw new Error('Formato de respuesta no reconocido');
+            }
 
             console.log('totalPages:', totalPages);
             console.log('currentPage:', currentPage);
+
+            renderProducts(productos);
+            renderPagination();
+        } catch (error) {
+            console.error('Error en loadProducts:', error);
+            productsGrid.innerHTML = '<div class="error">Error al cargar productos</div>';
         }
-
-        renderProducts(productos);
-        renderPagination();
-
-    } catch (error) {
-        console.error(error);
-    }
-}
     }
 
     // ========== RENDERIZAR PRODUCTOS ==========
@@ -177,24 +182,29 @@ async function loadProducts() {
         if (decimal >= 0.5) html += estrellaMedia;
         for (let i = 1; i <= 5 - Math.ceil(promedio); i++) html += estrellaVacia;
         html += `<span class="rating-count">(${total})</span>`;
-        html += '</div>';
         return html;
     }
 
     // ========== PAGINACIÓN ==========
     function renderPagination() {
+        console.log('Renderizando paginación');
+        console.log('Página actual:', currentPage);
+        console.log('Total páginas:', totalPages);
 
-            console.log('Renderizando paginación');
-    console.log('Página actual:', currentPage);
-    console.log('Total páginas:', totalPages);
-    
-        if (totalPages <= 1) { paginationDiv.innerHTML = ''; return; }
+        if (!paginationDiv) {
+            console.error('No se encontró el elemento #pagination');
+            return;
+        }
+        if (totalPages <= 1) {
+            paginationDiv.innerHTML = '';
+            return;
+        }
         let html = '';
-        if (currentPage > 1) html += `<button class="btn_pagina" data-page="${currentPage-1}"><i class="fas fa-chevron-left"></i></button>`;
+        if (currentPage > 1) html += `<button class="btn_pagina" data-page="${currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
         for (let i = 1; i <= totalPages; i++) {
             html += `<button class="btn_pagina ${i === Number(currentPage) ? 'activa' : ''}" data-page="${i}">${i}</button>`;
         }
-        if (currentPage < totalPages) html += `<button class="btn_pagina" data-page="${currentPage+1}"><i class="fas fa-chevron-right"></i></button>`;
+        if (currentPage < totalPages) html += `<button class="btn_pagina" data-page="${currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
         paginationDiv.innerHTML = html;
         document.querySelectorAll('.btn_pagina[data-page]').forEach(btn => {
             btn.addEventListener('click', () => {
