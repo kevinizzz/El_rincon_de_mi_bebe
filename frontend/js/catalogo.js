@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const API_BASE = 'https://elrincondemibebe-production.up.railway.app/api';
 
-    // Leer parámetros de la URL al cargar
+    // Leer parámetros de la URL al cargar (solo una vez)
     const urlParams = new URLSearchParams(window.location.search);
     const initialFilters = {
         categoria: urlParams.get('categoria') || null,
@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let totalPages = 1;
     let currentFilters = { ...initialFilters };
 
+    // Elementos DOM
     const productsGrid = document.getElementById('productsGrid');
     const paginationDiv = document.getElementById('pagination');
     const categoriasList = document.getElementById('categoriasList');
@@ -45,10 +46,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.history.pushState({}, '', newUrl);
     }
 
-    // ========== CARGAR CATEGORÍAS (CORREGIDO: usa /api/categoria) ==========
+    // ========== CARGAR CATEGORÍAS ==========
     async function loadCategorias() {
         try {
-            const res = await fetch(`${API_BASE}/categoria`); // ← corregido
+            const res = await fetch(`${API_BASE}/categoria`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const cats = await res.json();
             if (!cats.length) {
@@ -76,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ========== CARGAR PRODUCTOS (maneja paginación del backend) ==========
+    // ========== CARGAR PRODUCTOS ==========
     async function loadProducts() {
         try {
             const params = new URLSearchParams();
@@ -93,17 +94,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await res.json();
 
             let productos = [];
-            // Si el backend envía { data, totalPages }
             if (data.data && Array.isArray(data.data)) {
                 productos = data.data;
                 totalPages = data.totalPages || 1;
-            } 
-            // Si el backend envía un array plano (sin paginación)
-            else if (Array.isArray(data)) {
+            } else if (Array.isArray(data)) {
                 productos = data;
                 totalPages = Math.ceil(productos.length / 12);
-            } 
-            else {
+            } else {
                 throw new Error('Formato de respuesta no reconocido');
             }
             renderProducts(productos);
@@ -154,7 +151,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
         }).join('');
 
-        // Evento para botones "Ver detalles" (guardar estado antes de ir a detalle)
         document.querySelectorAll('.boton_producto').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();

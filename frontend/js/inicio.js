@@ -8,13 +8,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!container) return;
 
         try {
-            // ✅ CORREGIDO: usar /categoria/populares (sin 's')
             const res = await fetch(`${API_BASE}/categoria/populares`);
             if (!res.ok) throw new Error('Error al cargar categorías populares');
             const cats = await res.json();
             const top6 = cats.slice(0, 6);
+            // CORREGIDO: enlace a pages/catalogo.html
             container.innerHTML = top6.map(c => `
-                <a href="catalogo.html?categoria=${c.id}" class="tarjeta_categoria">
+                <a href="pages/catalogo.html?categoria=${c.id}" class="tarjeta_categoria">
                     <i class="fas fa-tag"></i>
                     <span>${escapeHtml(c.nombre)}</span>
                     <small>⭐ ${c.avg_rating ? parseFloat(c.avg_rating).toFixed(1) : '0.0'}</small>
@@ -22,14 +22,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             `).join('');
         } catch (error) {
             console.error('Error cargando categorías populares:', error);
-            // Fallback: cargar categorías normales (sin orden especial)
+            // Fallback: cargar categorías normales
             try {
-                // ✅ CORREGIDO: usar /categoria (sin 's')
                 const res = await fetch(`${API_BASE}/categoria`);
                 const cats = await res.json();
                 const primeras6 = cats.slice(0, 6);
+                // CORREGIDO: enlace a pages/catalogo.html
                 container.innerHTML = primeras6.map(c => `
-                    <a href="catalogo.html?categoria=${c.id}" class="tarjeta_categoria">
+                    <a href="pages/catalogo.html?categoria=${c.id}" class="tarjeta_categoria">
                         <i class="fas fa-tag"></i>
                         <span>${escapeHtml(c.nombre)}</span>
                     </a>
@@ -84,12 +84,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const promo = promos[0];
             const container = document.getElementById('promocionContainer');
             if (!container || !promo) return;
+            // CORREGIDO: enlace a pages/catalogo.html
             container.innerHTML = `
                 <div class="contenido_promocion">
                     <span class="etiqueta_promocion">PROMOCIÓN</span>
                     <h2>${escapeHtml(promo.titulo)}</h2>
                     <p>${escapeHtml(promo.descripcion || 'Aprovecha este descuento especial.')}</p>
-                    <a href="catalogo.html?promocion=${promo.id}" class="boton_primario">Ver promociones</a>
+                    <a href="pages/catalogo.html?promocion=${promo.id}" class="boton_primario">Ver promociones</a>
                 </div>
             `;
         } catch (error) {
