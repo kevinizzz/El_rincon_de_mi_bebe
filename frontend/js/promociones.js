@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="modal-container modal-large">
                 <div class="modal-header">
                     <h2 id="comboModalTitle">Detalle del combo</h2>
+                    <button class="modal-close-btn" id="closeComboModalBtn">&times;</button>
                 </div>
                 <div class="modal-body" id="comboModalBody"></div>
                 <div class="modal-footer">
@@ -22,7 +23,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `;
         document.body.appendChild(comboModal);
-        document.getElementById('closeComboModalFooterBtn').addEventListener('click', closeComboModal);
+
+        // Asignar eventos solo si los elementos existen
+        const closeBtn = document.getElementById('closeComboModalBtn');
+        const closeFooterBtn = document.getElementById('closeComboModalFooterBtn');
+        if (closeBtn) closeBtn.addEventListener('click', closeComboModal);
+        if (closeFooterBtn) closeFooterBtn.addEventListener('click', closeComboModal);
     }
 
     function closeComboModal() {

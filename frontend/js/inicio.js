@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!res.ok) throw new Error('Error al cargar categorías populares');
             const cats = await res.json();
             const top6 = cats.slice(0, 6);
-            // CORREGIDO: enlace a pages/catalogo.html
             container.innerHTML = top6.map(c => `
                 <a href="pages/catalogo.html?categoria=${c.id}" class="tarjeta_categoria">
                     <i class="fas fa-tag"></i>
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const res = await fetch(`${API_BASE}/categoria`);
                 const cats = await res.json();
                 const primeras6 = cats.slice(0, 6);
-                // CORREGIDO: enlace a pages/catalogo.html
                 container.innerHTML = primeras6.map(c => `
                     <a href="pages/catalogo.html?categoria=${c.id}" class="tarjeta_categoria">
                         <i class="fas fa-tag"></i>
@@ -84,7 +82,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const promo = promos[0];
             const container = document.getElementById('promocionContainer');
             if (!container || !promo) return;
-            // CORREGIDO: enlace a pages/catalogo.html
             container.innerHTML = `
                 <div class="contenido_promocion">
                     <span class="etiqueta_promocion">PROMOCIÓN</span>
@@ -172,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <h3 class="nombre_producto">${escapeHtml(p.nombre)}</h3>
                     ${precioHtml}
-                    <a href="detalle.html?id=${p.id}" class="boton_producto">Ver detalles</a>
+                    <a href="pages/detalle.html?id=${p.id}" class="boton_producto">Ver detalles</a>
                 </div>
             </div>
         `;
