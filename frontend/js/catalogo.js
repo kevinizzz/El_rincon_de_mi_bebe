@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let totalPages = 1;
     let currentFilters = { ...initialFilters };
 
-    // Elementos DOM
     const productsGrid = document.getElementById('productsGrid');
     const paginationDiv = document.getElementById('pagination');
     const categoriasList = document.getElementById('categoriasList');
@@ -49,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ========== CARGAR CATEGORÍAS ==========
     async function loadCategorias() {
         try {
-            const res = await fetch(`${API_BASE}/categoria`);
+            const res = await fetch(`${API_BASE}/categorias`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const cats = await res.json();
             if (!cats.length) {
@@ -83,8 +82,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams();
             params.append('pagina', currentPage);
             params.append('limite', 12);
-
-            // Filtros
             if (currentFilters.categoria) params.append('categoria', currentFilters.categoria);
             if (currentFilters.orden) params.append('orden', currentFilters.orden);
             if (currentFilters.minPrice !== '') params.append('precio_min', currentFilters.minPrice);
@@ -96,16 +93,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await res.json();
 
             let productos = [];
-            if (data.data && Array.isArray(data.data)) {
-                productos = data.data;
-                totalPages = data.totalPages || 1;
-            } else if (Array.isArray(data)) {
+            if (Array.isArray(data)) {
                 productos = data;
                 totalPages = Math.ceil(productos.length / 12);
+            } else if (data.data && Array.isArray(data.data)) {
+                productos = data.data;
+                totalPages = data.totalPages || 1;
             } else {
                 throw new Error('Formato de respuesta no reconocido');
             }
-
             renderProducts(productos);
             renderPagination();
         } catch (error) {
@@ -167,55 +163,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ========== FUNCIÓN GENERAR ESTRELLAS (CORREGIDA) ==========
     function generarEstrellas(promedio, total) {
-        if (total === 0) {
-            return '<span class="sin-opiniones">Sin opiniones</span>';
-        }
-
+        if (total === 0) return '<span class="sin-opiniones">Sin opiniones</span>';
         const estrellaLlena = '<i class="fas fa-star"></i>';
         const estrellaMedia = '<i class="fas fa-star-half-alt"></i>';
         const estrellaVacia = '<i class="far fa-star"></i>';
-
         let html = '<div class="rating-estrellas">';
-
         const entero = Math.floor(promedio);
         const decimal = promedio - entero;
-
-        for (let i = 1; i <= entero; i++) {
-            html += estrellaLlena;
-        }
-
-        if (decimal >= 0.5) {
-            html += estrellaMedia;
-        }
-
-        for (let i = 1; i <= 5 - Math.ceil(promedio); i++) {
-            html += estrellaVacia;
-        }
-
+        for (let i = 1; i <= entero; i++) html += estrellaLlena;
+        if (decimal >= 0.5) html += estrellaMedia;
+        for (let i = 1; i <= 5 - Math.ceil(promedio); i++) html += estrellaVacia;
         html += `<span class="rating-count">(${total})</span>`;
-        html += '</div>'; // ✅ ESTE ES EL CIERRE QUE FALTABA
-
+        html += '</div>'; // ✅ CIERRE CORRECTO
         return html;
     }
 
     // ========== PAGINACIÓN ==========
     function renderPagination() {
-        if (!paginationDiv) {
-            console.error('No se encontró el elemento #pagination');
-            return;
-        }
-        if (totalPages <= 1) {
-            paginationDiv.innerHTML = '';
-            return;
-        }
+        if (totalPages <= 1) { paginationDiv.innerHTML = ''; return; }
         let html = '';
-        if (currentPage > 1) html += `<button class="btn_pagina" data-page="${currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
+        if (currentPage > 1) html += `<button class="btn_pagina" data-page="${currentPage-1}"><i class="fas fa-chevron-left"></i></button>`;
         for (let i = 1; i <= totalPages; i++) {
             html += `<button class="btn_pagina ${i === Number(currentPage) ? 'activa' : ''}" data-page="${i}">${i}</button>`;
         }
-        if (currentPage < totalPages) html += `<button class="btn_pagina" data-page="${currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
+        if (currentPage < totalPages) html += `<button class="btn_pagina" data-page="${currentPage+1}"><i class="fas fa-chevron-right"></i></button>`;
         paginationDiv.innerHTML = html;
         document.querySelectorAll('.btn_pagina[data-page]').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -229,7 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ========== FILTROS ==========
+    // ========== FILTROS Y EVENTOS ==========
     if (sortSelect) {
         sortSelect.value = currentFilters.orden;
         sortSelect.addEventListener('change', () => {
@@ -254,7 +226,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.addEventListener('click', (e) => {
             const dentroPrecio = e.target === precioMinInput || e.target === precioMaxInput ||
                 precioMinInput.contains(e.target) || precioMaxInput.contains(e.target);
-            if (!dentroPrecio) applyPriceFilter();
+            if (!dentroPrecio) {
+                applyPriceFilter();
+            }
         });
     }
 
