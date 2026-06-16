@@ -78,7 +78,7 @@
 .imagen_principal_producto img {
     width: 100%;
     height: 100%;
-    object-fit: contain;            /* la imagen se ajusta sin recortar */
+    object-fit: cover;            /* la imagen se ajusta sin recortar */
 }
 .badge_rebaja {
     position: absolute;
@@ -421,10 +421,11 @@
 
 /* ========== SECCIÓN DE RESEÑAS (MEJORADO) ========== */
 .seccion_resenas {
-    margin-top: 48px;
-    padding-top: 24px;
-    border-top: 1px solid var(--borde-suave);
+    max-width: 1280px;
+    margin: 40px auto 0;
+    padding: 0 5% 90px;
 }
+
 .seccion_resenas h3 {
     font-size: 1.4rem;
     font-weight: 700;
