@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="modal-container modal-large">
                 <div class="modal-header">
                     <h2 id="comboModalTitle">Detalle del combo</h2>
-                    <button class="modal-close" id="closeComboModalBtn"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="modal-body" id="comboModalBody"></div>
                 <div class="modal-footer">

@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const tallas = (p.talla && typeof p.talla === 'string') ? p.talla.split(',') : [];
         const tallasHtml = tallas.length ? `
             <div class="bloque_tallas">
-                <div class="encabezado_tallas"><h3 class="etiqueta_talla">Talla</h3><a href="#" class="guia_tallas">Guía de tallas</a></div>
+                <div class="encabezado_tallas"><h3 class="etiqueta_talla">Talla</h3></div>
                 <div class="grid_tallas">${tallas.map(t => `<button class="boton_talla">${t.trim()}</button>`).join('')}</div>
             </div>
         ` : '<p>Sin tallas disponibles</p>';
