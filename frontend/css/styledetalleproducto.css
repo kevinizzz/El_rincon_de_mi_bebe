@@ -67,19 +67,21 @@
 /* ========== IMAGEN PRINCIPAL – VERSIÓN PROFESIONAL ========== */
 .imagen_principal_producto {
     width: 100%;
-    aspect-ratio: 1 / 1.2;          /* relación de aspecto */
-    border-radius: 24px;            /* bordes redondeados */
-    background: var(--color-coral-claro);  /* fondo rosa suave */
+    aspect-ratio: 1 / 1.2;
+    border-radius: 24px;
+    background: var(--color-coral-claro);
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
+
+
 .imagen_principal_producto img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;            /* la imagen se ajusta sin recortar */
+    object-fit: cover;
 }
+
 .badge_rebaja {
     position: absolute;
     top: 18px;
@@ -422,8 +424,14 @@
 /* ========== SECCIÓN DE RESEÑAS (MEJORADO) ========== */
 .seccion_resenas {
     max-width: 1280px;
-    margin: 40px auto 0;
-    padding: 0 5% 90px;
+    margin: 48px auto 0;
+    padding: 24px 5% 0;
+    border-top: 1px solid var(--borde-suave);
+}
+
+#listaResenas {
+    max-width: 850px;
+    margin: 0 auto;
 }
 
 .seccion_resenas h3 {
@@ -442,7 +450,8 @@
     background: white;
     border-radius: 28px;
     padding: 20px 24px;
-    margin-bottom: 20px;
+    margin: 0 auto 20px;
+    width: 100%;
     transition: all 0.2s ease;
     border: 1px solid #f5f5f5;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
