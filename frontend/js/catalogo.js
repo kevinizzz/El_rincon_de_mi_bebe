@@ -79,36 +79,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ========== CARGAR PRODUCTOS ==========
     async function loadProducts() {
-        try {
-            const params = new URLSearchParams();
-            params.append('pagina', currentPage);
-            params.append('limite', 12);
-            if (currentFilters.categoria) params.append('categoria', currentFilters.categoria);
-            if (currentFilters.orden) params.append('orden', currentFilters.orden);
-            if (currentFilters.minPrice !== '') params.append('precio_min', currentFilters.minPrice);
-            if (currentFilters.maxPrice !== '') params.append('precio_max', currentFilters.maxPrice);
-            if (currentFilters.busqueda !== '') params.append('busqueda', currentFilters.busqueda);
+async function loadProducts() {
+    try {
+        const params = new URLSearchParams();
 
-            const res = await fetch(`${API_BASE}/productos?${params}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
+        params.append('pagina', currentPage);
+        params.append('limite', 12);
 
-            let productos = [];
-            if (data.data && Array.isArray(data.data)) {
-                productos = data.data;
-                totalPages = data.totalPages || 1;
-            } else if (Array.isArray(data)) {
-                productos = data;
-                totalPages = Math.ceil(productos.length / 12);
-            } else {
-                throw new Error('Formato de respuesta no reconocido');
-            }
-            renderProducts(productos);
-            renderPagination();
-        } catch (error) {
-            console.error('Error en loadProducts:', error);
-            productsGrid.innerHTML = '<div class="error">Error al cargar productos</div>';
+        console.log('URL:', `${API_BASE}/productos?${params}`);
+
+        const res = await fetch(`${API_BASE}/productos?${params}`);
+        const data = await res.json();
+
+        console.log('Respuesta API:', data);
+
+        let productos = [];
+
+        if (data.data && Array.isArray(data.data)) {
+            productos = data.data;
+            totalPages = data.totalPages || 1;
+
+            console.log('totalPages:', totalPages);
+            console.log('currentPage:', currentPage);
         }
+
+        renderProducts(productos);
+        renderPagination();
+
+    } catch (error) {
+        console.error(error);
+    }
+}
     }
 
     // ========== RENDERIZAR PRODUCTOS ==========
@@ -182,6 +183,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ========== PAGINACIÓN ==========
     function renderPagination() {
+
+            console.log('Renderizando paginación');
+    console.log('Página actual:', currentPage);
+    console.log('Total páginas:', totalPages);
+    
         if (totalPages <= 1) { paginationDiv.innerHTML = ''; return; }
         let html = '';
         if (currentPage > 1) html += `<button class="btn_pagina" data-page="${currentPage-1}"><i class="fas fa-chevron-left"></i></button>`;
