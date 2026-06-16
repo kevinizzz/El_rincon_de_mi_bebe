@@ -77,14 +77,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ========== CARGAR PRODUCTOS (CORREGIDO: con filtros y sin duplicación) ==========
+    // ========== CARGAR PRODUCTOS ==========
     async function loadProducts() {
         try {
             const params = new URLSearchParams();
             params.append('pagina', currentPage);
             params.append('limite', 12);
 
-            // Filtros (restaurados)
+            // Filtros
             if (currentFilters.categoria) params.append('categoria', currentFilters.categoria);
             if (currentFilters.orden) params.append('orden', currentFilters.orden);
             if (currentFilters.minPrice !== '') params.append('precio_min', currentFilters.minPrice);
@@ -105,9 +105,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 throw new Error('Formato de respuesta no reconocido');
             }
-
-            console.log('totalPages:', totalPages);
-            console.log('currentPage:', currentPage);
 
             renderProducts(productos);
             renderPagination();
@@ -170,27 +167,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // ========== FUNCIÓN GENERAR ESTRELLAS (CORREGIDA) ==========
     function generarEstrellas(promedio, total) {
-        if (total === 0) return '<span class="sin-opiniones">Sin opiniones</span>';
+        if (total === 0) {
+            return '<span class="sin-opiniones">Sin opiniones</span>';
+        }
+
         const estrellaLlena = '<i class="fas fa-star"></i>';
         const estrellaMedia = '<i class="fas fa-star-half-alt"></i>';
         const estrellaVacia = '<i class="far fa-star"></i>';
+
         let html = '<div class="rating-estrellas">';
+
         const entero = Math.floor(promedio);
         const decimal = promedio - entero;
-        for (let i = 1; i <= entero; i++) html += estrellaLlena;
-        if (decimal >= 0.5) html += estrellaMedia;
-        for (let i = 1; i <= 5 - Math.ceil(promedio); i++) html += estrellaVacia;
+
+        for (let i = 1; i <= entero; i++) {
+            html += estrellaLlena;
+        }
+
+        if (decimal >= 0.5) {
+            html += estrellaMedia;
+        }
+
+        for (let i = 1; i <= 5 - Math.ceil(promedio); i++) {
+            html += estrellaVacia;
+        }
+
         html += `<span class="rating-count">(${total})</span>`;
+        html += '</div>'; // ✅ ESTE ES EL CIERRE QUE FALTABA
+
         return html;
     }
 
     // ========== PAGINACIÓN ==========
     function renderPagination() {
-        console.log('Renderizando paginación');
-        console.log('Página actual:', currentPage);
-        console.log('Total páginas:', totalPages);
-
         if (!paginationDiv) {
             console.error('No se encontró el elemento #pagination');
             return;

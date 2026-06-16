@@ -576,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
     }
 
-    // INICIALIZAR
+ 
     loadCategorias();
     loadTemporadas();
     loadProductos();
