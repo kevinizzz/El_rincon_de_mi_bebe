@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ========== CARGAR CATEGORÍAS ==========
     async function loadCategorias() {
         try {
-            const res = await fetch(`${API_BASE}/categorias`);
+            const res = await fetch(`${API_BASE}/categoria`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const cats = await res.json();
             if (!cats.length) {
