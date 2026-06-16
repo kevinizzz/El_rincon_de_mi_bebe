@@ -5,11 +5,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const productoId = urlParams.get('id');
     const container = document.getElementById('productoDetalle');
 
-    let esFavorito = false;  // estado actual del favorito
+    let esFavorito = false;
 
     if (!productoId) {
         container.innerHTML = '<div style="text-align:center; padding:40px;">Producto no especificado</div><a href="catalogo.html" class="boton">Volver al catálogo</a>';
         return;
+    }
+
+    // Función para registrar la vista
+    function registrarVista() {
+        if (window.registrarInteraccion && productoId) {
+            window.registrarInteraccion('ver_producto', productoId);
+            console.log('Vista registrada para producto', productoId);
+        } else {
+            console.warn('registrarInteraccion no disponible');
+        }
     }
 
     try {
@@ -17,19 +27,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!res.ok) throw new Error('Producto no encontrado');
         const p = await res.json();
 
-        // Verificar si el producto está en favoritos (usando el endpoint /favoritos)
         esFavorito = await verificarFavorito(productoId);
 
-        // Renderizar la vista del producto
         renderProducto(p);
         cargarPromedio(productoId);
         cargarMiCalificacion(productoId);
         cargarRelacionados(p.categoria_id, productoId);
         inicializarEventos(p);
 
+        // 🔥 Registrar la vista del producto (NUEVO)
+        registrarVista();
+
     } catch (error) {
         container.innerHTML = `<div style="text-align:center; padding:40px;">Producto no encontrado</div><a href="catalogo.html" class="boton">Volver al catálogo</a>`;
     }
+
+    // También registrar si la página se carga desde la caché (botón atrás)
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            registrarVista();
+        }
+    });
 
     // ========== FUNCIONES DE FAVORITOS ==========
     async function verificarFavorito(productId) {
@@ -79,7 +97,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (res.ok) {
                 esFavorito = nuevaEstado;
                 actualizarBotonFavorito(esFavorito);
-                // Registrar interacción (opcional)
                 if (window.registrarInteraccion) {
                     window.registrarInteraccion(nuevaEstado ? 'agregar_favorito' : 'quitar_favorito', productId);
                 }
@@ -93,9 +110,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ========== RENDERIZADO DEL PRODUCTO ==========
+    // ========== RENDERIZADO DEL PRODUCTO (sin cambios, igual) ==========
     function renderProducto(p) {
-        // Preparar imágenes
         const imagenes = [];
         if (p.imagen_principal) imagenes.push(p.imagen_principal);
         if (p.fotos && p.fotos.length) imagenes.push(...p.fotos.slice(0, 3));
@@ -161,10 +177,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `;
 
-        // Actualizar el botón según el estado obtenido
         actualizarBotonFavorito(esFavorito);
 
-        // Evento de cambio de imagen en miniaturas
         document.querySelectorAll('.miniatura_producto').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.miniatura_producto').forEach(b => b.classList.remove('activa'));
@@ -175,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ========== CALIFICACIONES ==========
+    // ========== CALIFICACIONES (sin cambios) ==========
     async function cargarPromedio(id) {
         try {
             const res = await fetch(`${API_BASE}/calificaciones/producto/${id}`);
@@ -183,9 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const promedio = data.promedio || 0;
             const total = data.total || 0;
             const ratingDiv = document.getElementById('ratingPromedio');
-            if (ratingDiv) {
-                ratingDiv.innerHTML = generarEstrellas(promedio, total);
-            }
+            if (ratingDiv) ratingDiv.innerHTML = generarEstrellas(promedio, total);
         } catch(e) { console.error(e); }
     }
 
@@ -233,7 +245,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ========== EVENTOS ==========
     function inicializarEventos(p) {
-        // Estrellas de calificación
         const estrellas = document.querySelectorAll('.estrellas-usuario .estrella');
         estrellas.forEach(estrella => {
             estrella.addEventListener('click', () => {
@@ -251,17 +262,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         document.getElementById('btnCalificar')?.addEventListener('click', () => enviarCalificacion(p.id));
 
-        // Botón favorito
         const favBtn = document.getElementById('favoritoBtn');
-        if (favBtn) {
-            favBtn.addEventListener('click', () => toggleFavorito(p.id));
-        }
+        if (favBtn) favBtn.addEventListener('click', () => toggleFavorito(p.id));
 
-        // WhatsApp
         document.getElementById('whatsappBtn')?.addEventListener('click', () => {
-            if (window.registrarInteraccion) {
-                window.registrarInteraccion('consulta_producto', p.id);
-            }
+            if (window.registrarInteraccion) window.registrarInteraccion('consulta_producto', p.id);
             window.open(`https://wa.me/50512345678?text=Hola, me interesa el producto: ${encodeURIComponent(p.nombre)}`, '_blank');
         });
     }
@@ -310,7 +315,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (decimal >= 0.5) html += estrellaMedia;
         for (let i = 1; i <= 5 - Math.ceil(promedio); i++) html += estrellaVacia;
         html += `<span class="rating-count">(${total} opiniones)</span>`;
-        html += '</div>';
         return html;
     }
 

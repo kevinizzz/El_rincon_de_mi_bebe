@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let html = '';
         if (currentPage > 1) html += `<button class="btn_pagina" data-page="${currentPage-1}"><i class="fas fa-chevron-left"></i></button>`;
         for (let i = 1; i <= totalPages; i++) {
-            html += `<button class="btn_pagina ${i === currentPage ? 'activa' : ''}" data-page="${i}">${i}</button>`;
+            html += `<button class="btn_pagina ${i === Number(currentPage) ? 'activa' : ''}" data-page="${i}">${i}</button>`;
         }
         if (currentPage < totalPages) html += `<button class="btn_pagina" data-page="${currentPage+1}"><i class="fas fa-chevron-right"></i></button>`;
         paginationDiv.innerHTML = html;
