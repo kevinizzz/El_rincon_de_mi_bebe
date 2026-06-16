@@ -131,11 +131,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         ` : `<div class="precio_contenedor"><span class="precio_actual">C$ ${parseFloat(p.precio).toFixed(2)}</span></div>`;
 
-        const tallas = p.tallas ? p.tallas.split(',') : [];
+        // ✅ CORRECCIÓN AQUÍ: usar p.talla (singular) y proteger contra nulos
+        const tallas = (p.talla && typeof p.talla === 'string') ? p.talla.split(',') : [];
         const tallasHtml = tallas.length ? `
             <div class="bloque_tallas">
                 <div class="encabezado_tallas"><h3 class="etiqueta_talla">Talla</h3><a href="#" class="guia_tallas">Guía de tallas</a></div>
-                <div class="grid_tallas">${tallas.map(t => `<button class="boton_talla">${t}</button>`).join('')}</div>
+                <div class="grid_tallas">${tallas.map(t => `<button class="boton_talla">${t.trim()}</button>`).join('')}</div>
             </div>
         ` : '<p>Sin tallas disponibles</p>';
 
