@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
-// Función auxiliar para registrar actividades del administrador
 async function registrarActividadAdmin(accion, descripcion) {
     try {
         await db.query(
@@ -14,7 +13,6 @@ async function registrarActividadAdmin(accion, descripcion) {
     }
 }
 
-// ==================== OBTENER PRODUCTOS ====================
 router.get('/', async (req, res) => {
     try {
         let {
@@ -150,7 +148,6 @@ router.get('/', async (req, res) => {
         const productosConDescuento = [];
         for (const prod of productos) {
             let descuentoTotal = 0;
-            // Prioridad: promoción por producto > promoción por categoría
             let promoProducto = promocionesActivas.find(promo => promo.producto_id === prod.id);
             if (promoProducto) {
                 descuentoTotal = promoProducto.descuento;
@@ -181,8 +178,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-
-// ==================== OBTENER PRODUCTOS ====================
 router.get('/', async (req, res) => {
     try {
         let {
@@ -348,7 +343,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// ==================== OBTENER UN PRODUCTO POR ID ====================
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -404,7 +398,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// ==================== ENDPOINT PARA COMBOS DE UN PRODUCTO ====================
 router.get('/:id/combos', async (req, res) => {
     try {
         const { id } = req.params;
@@ -424,7 +417,6 @@ router.get('/:id/combos', async (req, res) => {
     }
 });
 
-// ==================== CREAR PRODUCTO ====================
 router.post('/', async (req, res) => {
     try {
         const { nombre, categoria_id, precio, temporada_id, descripcion, imagen, fotos, tallas, activo, destacado } = req.body;
@@ -454,7 +446,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// ==================== ACTUALIZAR PRODUCTO ====================
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -481,7 +472,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// ==================== ELIMINAR PRODUCTO ====================
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -496,7 +486,6 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// ==================== ALTERNAR DESTACADO ====================
 router.patch('/:id/destacar', async (req, res) => {
     try {
         const { id } = req.params;
@@ -507,7 +496,6 @@ router.patch('/:id/destacar', async (req, res) => {
     }
 });
 
-// ==================== ALTERNAR ACTIVO ====================
 router.patch('/:id/activo', async (req, res) => {
     try {
         const { id } = req.params;

@@ -38,7 +38,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Ruta para verificar token (opcional)
 router.get('/verificar', (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ error: 'No token' });
@@ -50,7 +49,6 @@ router.get('/verificar', (req, res) => {
     }
 });
 
-// Obtener actividades recientes del administrador
 router.get('/actividades', async (req, res) => {
     try {
         const { limite = 10 } = req.query;

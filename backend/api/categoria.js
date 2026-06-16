@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
-// Obtener todas las categorías (sin conteo)
 router.get('/', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM categorias ORDER BY nombre');
@@ -13,7 +12,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Obtener categorías con conteo de productos
 router.get('/con-conteo', async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -30,7 +28,6 @@ router.get('/con-conteo', async (req, res) => {
     }
 });
 
-// Obtener una categoría por ID
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -42,7 +39,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Crear nueva categoría
 router.post('/', async (req, res) => {
     try {
         const { nombre } = req.body;
@@ -55,7 +51,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Actualizar categoría
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -68,7 +63,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Eliminar categoría (solo si no tiene productos asociados)
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -83,7 +77,6 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// Obtener categorías populares (top 6)
 router.get('/populares', async (req, res) => {
     try {
         const [rows] = await db.query(`

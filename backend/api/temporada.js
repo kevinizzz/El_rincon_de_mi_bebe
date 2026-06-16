@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
-// Obtener todas las temporadas (sin conteo)
 router.get('/', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM temporadas ORDER BY nombre');
@@ -13,7 +12,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Obtener temporadas con conteo de productos
 router.get('/con-conteo', async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -30,19 +28,17 @@ router.get('/con-conteo', async (req, res) => {
     }
 });
 
-// Obtener una temporada por ID
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const [rows] = await db.query('SELECT * FROM temporadas WHERE id = ?', [id]);
         if (rows.length === 0) return res.status(404).json({ error: 'Temporada no encontrada' });
         res.json(rows[0]);
-    } catch (error) {
+         } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Crear nueva temporada
 router.post('/', async (req, res) => {
     try {
         const { nombre } = req.body;
@@ -55,7 +51,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Actualizar temporada
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -68,7 +63,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Eliminar temporada (solo si no tiene productos asociados)
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

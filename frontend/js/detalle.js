@@ -32,17 +32,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderProducto(p);
         cargarPromedio(productoId);
         cargarMiCalificacion(productoId);
+        cargarResenas(productoId);          // Cargar reseñas al inicio
         cargarRelacionados(p.categoria_id, productoId);
         inicializarEventos(p);
 
-        // 🔥 Registrar la vista del producto (NUEVO)
         registrarVista();
 
     } catch (error) {
         container.innerHTML = `<div style="text-align:center; padding:40px;">Producto no encontrado</div><a href="catalogo.html" class="boton">Volver al catálogo</a>`;
     }
 
-    // También registrar si la página se carga desde la caché (botón atrás)
+    // Registrar también si la página se carga desde la caché (botón atrás)
     window.addEventListener('pageshow', (event) => {
         if (event.persisted) {
             registrarVista();
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ========== RENDERIZADO DEL PRODUCTO (sin cambios, igual) ==========
+    // ========== RENDERIZADO DEL PRODUCTO ==========
     function renderProducto(p) {
         const imagenes = [];
         if (p.imagen_principal) imagenes.push(p.imagen_principal);
@@ -177,6 +177,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `;
 
+        // Contenedor para reseñas de clientes (debe existir en el HTML)
+        if (!document.getElementById('listaResenas')) {
+            const seccionResenas = document.createElement('div');
+            seccionResenas.className = 'seccion_resenas';
+            seccionResenas.innerHTML = '<h3>Opiniones de nuestros clientes</h3><div id="listaResenas"></div>';
+            document.querySelector('.informacion_producto').appendChild(seccionResenas);
+        }
+
         actualizarBotonFavorito(esFavorito);
 
         document.querySelectorAll('.miniatura_producto').forEach(btn => {
@@ -189,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ========== CALIFICACIONES (sin cambios) ==========
+    // ========== CALIFICACIONES Y RESEÑAS ==========
     async function cargarPromedio(id) {
         try {
             const res = await fetch(`${API_BASE}/calificaciones/producto/${id}`);
@@ -199,6 +207,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             const ratingDiv = document.getElementById('ratingPromedio');
             if (ratingDiv) ratingDiv.innerHTML = generarEstrellas(promedio, total);
         } catch(e) { console.error(e); }
+    }
+
+    async function cargarResenas(id) {
+        const container = document.getElementById('listaResenas');
+        if (!container) return;
+        try {
+            const res = await fetch(`${API_BASE}/calificaciones/producto/${id}/resenas`);
+            if (!res.ok) throw new Error('Error al cargar reseñas');
+            const resenas = await res.json();
+            if (resenas.length === 0) {
+                container.innerHTML = '<p class="sin-resenas">Sé el primero en opinar sobre este producto.</p>';
+                return;
+            }
+            container.innerHTML = resenas.map(r => `
+                <div class="tarjeta_resena">
+                    <div class="resena-header">
+                        <span class="resena-usuario">${escapeHtml(r.usuario || 'Anónimo')}</span>
+                        <span class="resena-fecha">${new Date(r.fecha).toLocaleDateString()}</span>
+                    </div>
+                    <div class="resena-estrellas">${generarEstrellas(r.puntuacion, 1)}</div>
+                    <p class="resena-comentario">${escapeHtml(r.comentario)}</p>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error cargando reseñas:', error);
+            container.innerHTML = '<p class="error">No se pudieron cargar las opiniones</p>';
+        }
     }
 
     async function cargarMiCalificacion(id) {
@@ -230,7 +265,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (res.ok) {
                 document.getElementById('mensajeCalificacion').innerHTML = '<span style="color:green;">¡Gracias por tu calificación!</span>';
                 cargarPromedio(id);
-            } else alert('Error al guardar');
+                cargarResenas(id);     // Recargar reseñas después de enviar
+            } else {
+                const err = await res.json();
+                alert('Error: ' + (err.error || 'No se pudo guardar'));
+            }
         } catch(e) { alert('Error de conexión'); }
     }
 

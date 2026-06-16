@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
-// Obtener actividad reciente
 router.get('/reciente', async (req, res) => {
     try {
         const { limite = 6 } = req.query;

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
-// Obtener favoritos del usuario por session_uuid
 router.get('/', async (req, res) => {
     try {
         const { session_uuid } = req.query;
@@ -70,7 +69,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Toggle favorito (agregar o quitar)
 router.post('/toggle', async (req, res) => {
     try {
         const { session_uuid, producto_id, agregar } = req.body;

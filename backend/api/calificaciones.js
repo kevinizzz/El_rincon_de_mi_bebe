@@ -2,7 +2,24 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
-// Obtener promedio y total de calificaciones de un producto
+router.get('/producto/:id/resenas', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const [rows] = await db.query(`
+            SELECT puntuacion, comentario, fecha,
+                   LEFT(session_uuid, 8) as usuario
+            FROM calificaciones
+            WHERE producto_id = ? AND comentario IS NOT NULL AND comentario != ''
+            ORDER BY fecha DESC
+            LIMIT 20
+        `, [id]);
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 router.get('/producto/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -23,7 +40,6 @@ router.get('/producto/:id', async (req, res) => {
     }
 });
 
-// Obtener calificación del usuario actual (por session_uuid)
 router.get('/usuario', async (req, res) => {
     try {
         const { session_uuid, producto_id } = req.query;
@@ -40,7 +56,6 @@ router.get('/usuario', async (req, res) => {
     }
 });
 
-// Guardar o actualizar calificación
 router.post('/', async (req, res) => {
     try {
         const { session_uuid, producto_id, puntuacion, comentario } = req.body;

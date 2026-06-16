@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
-// Función auxiliar para registrar actividades del administrador
 async function registrarActividadAdmin(accion, descripcion) {
     try {
         await db.query(
@@ -14,9 +13,7 @@ async function registrarActividadAdmin(accion, descripcion) {
     }
 }
 
-// ==================== RUTAS ESPECÍFICAS (DEBEN IR PRIMERO) ====================
 
-// 1. Promociones destacadas (frontend público)
 router.get('/destacadas', async (req, res) => {
     try {
         const hoy = new Date().toISOString().split('T')[0];
@@ -54,7 +51,6 @@ router.get('/destacadas', async (req, res) => {
     }
 });
 
-// 2. Combos especiales activos (frontend público)
 router.get('/combos', async (req, res) => {
     try {
         const hoy = new Date().toISOString().split('T')[0];
@@ -72,7 +68,6 @@ router.get('/combos', async (req, res) => {
     }
 });
 
-// 3. Todos los combos (para admin) – incluye productos_ids
 router.get('/combos/todos', async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -99,9 +94,6 @@ router.get('/combos/todos', async (req, res) => {
     }
 });
 
-// ==================== RUTAS CON PARÁMETROS (DEBEN IR DESPUÉS) ====================
-
-// Obtener todas las promociones normales (con filtros)
 router.get('/', async (req, res) => {
     try {
         let { activa, limite } = req.query;
@@ -131,7 +123,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Obtener una promoción normal por ID
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -151,7 +142,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Crear promoción normal
 router.post('/', async (req, res) => {
     try {
         const { titulo, categoria_id, producto_id, descuento, descripcion, fecha_inicio, fecha_fin, activa } = req.body;
@@ -162,7 +152,6 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'Debe seleccionar una categoría O un producto específico (no ambos)' });
         }
 
-        // Validar que el producto no tenga otra promoción activa
         if (producto_id) {
             const [existe] = await db.query(
                 `SELECT id FROM promociones WHERE producto_id = ? AND activa = 1`,
@@ -179,7 +168,6 @@ router.post('/', async (req, res) => {
             [titulo, categoria_id || null, producto_id || null, descuento, descripcion || '', fecha_inicio, fecha_fin, activa !== undefined ? activa : 1]
         );
 
-        // Registrar actividad del administrador
         await registrarActividadAdmin('crear_promocion', `Promoción creada: ${titulo}`);
 
         res.status(201).json({ id: result.insertId, message: 'Promoción creada' });
@@ -189,7 +177,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Actualizar promoción normal
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -201,7 +188,6 @@ router.put('/:id', async (req, res) => {
             return res.status(400).json({ error: 'Debe seleccionar una categoría O un producto específico (no ambos)' });
         }
 
-        // Validar que si es por producto, no haya otra promoción activa para ese producto (excepto la actual)
         if (producto_id) {
             const [existe] = await db.query(
                 `SELECT id FROM promociones WHERE producto_id = ? AND activa = 1 AND id != ?`,
@@ -220,7 +206,6 @@ router.put('/:id', async (req, res) => {
             [titulo, categoria_id || null, producto_id || null, descuento, descripcion || '', fecha_inicio, fecha_fin, activa, id]
         );
 
-        // Registrar actividad del administrador
         await registrarActividadAdmin('editar_promocion', `Promoción actualizada: ${titulo} (ID ${id})`);
 
         res.json({ message: 'Promoción actualizada' });
@@ -230,12 +215,10 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Eliminar promoción normal
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Obtener título antes de eliminar para el registro
         const [promo] = await db.query('SELECT titulo FROM promociones WHERE id = ?', [id]);
         const titulo = promo.length ? promo[0].titulo : `ID ${id}`;
 
@@ -250,7 +233,6 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// Activar/desactivar promoción normal
 router.patch('/:id/toggle', async (req, res) => {
     try {
         const { id } = req.params;
@@ -267,9 +249,6 @@ router.patch('/:id/toggle', async (req, res) => {
     }
 });
 
-// ==================== CRUD DE COMBOS (ADMIN) ====================
-
-// Crear combo
 router.post('/combos', async (req, res) => {
     try {
         const { titulo, descripcion, descuento, fecha_inicio, fecha_fin, activa, productos_ids } = req.body;
@@ -295,7 +274,6 @@ router.post('/combos', async (req, res) => {
     }
 });
 
-// Obtener un combo por ID (para editar)
 router.get('/combos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -307,7 +285,6 @@ router.get('/combos/:id', async (req, res) => {
     }
 });
 
-// Actualizar combo
 router.put('/combos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -329,7 +306,6 @@ router.put('/combos/:id', async (req, res) => {
     }
 });
 
-// Eliminar combo
 router.delete('/combos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -347,7 +323,6 @@ router.delete('/combos/:id', async (req, res) => {
     }
 });
 
-// Activar/desactivar combo
 router.patch('/combos/:id/toggle', async (req, res) => {
     try {
         const { id } = req.params;

@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../base_datos/database');
 const { randomUUID } = require('crypto');
 
-// Iniciar nueva sesión (o recuperar existente)
 router.post('/iniciar', async (req, res) => {
     try {
         let { session_uuid, dispositivo } = req.body;
@@ -37,7 +36,6 @@ router.post('/iniciar', async (req, res) => {
     }
 });
 
-// Heartbeat
 router.post('/heartbeat', async (req, res) => {
     try {
         const { session_uuid } = req.body;
@@ -49,7 +47,6 @@ router.post('/heartbeat', async (req, res) => {
     }
 });
 
-// Sesiones por día (para dashboard)
 router.get('/por-dia', async (req, res) => {
     try {
         const { dias = 7 } = req.query;
@@ -69,9 +66,6 @@ router.get('/por-dia', async (req, res) => {
     }
 });
 
-// ========== NUEVOS ENDPOINTS PARA EL DASHBOARD ==========
-
-// Usuarios activos (últimos 5 minutos) – divide por dispositivo
 router.get('/activas', async (req, res) => {
     try {
         const [rows] = await db.query(`
@@ -94,7 +88,6 @@ router.get('/activas', async (req, res) => {
     }
 });
 
-// Últimos visitantes (últimas sesiones)
 router.get('/ultimas', async (req, res) => {
     try {
         const { limite = 10 } = req.query;

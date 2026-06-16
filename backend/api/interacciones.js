@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../base_datos/database');
 
-
-// Contar interacciones
 router.get('/contar', async (req, res) => {
     try {
         const { tipo, fecha, desde } = req.query;
@@ -22,7 +20,7 @@ router.get('/contar', async (req, res) => {
     }
 });
 
-// Registrar interacción
+
 router.post('/registrar', async (req, res) => {
     try {
         const { session_uuid, producto_id, tipo_interaccion, tiempo_visualizacion_seg } = req.body;
@@ -35,8 +33,6 @@ router.post('/registrar', async (req, res) => {
             return res.status(404).json({ error: 'Sesión no encontrada' });
         }
         const session_id = sesion[0].id;
-
-        // Validar que el producto existe (si se proporciona)
         let productoExiste = false;
         if (producto_id) {
             const [prod] = await db.query('SELECT id FROM productos WHERE id = ?', [producto_id]);
@@ -78,7 +74,6 @@ router.post('/registrar', async (req, res) => {
     }
 });
 
-// Obtener interacciones recientes (para dashboard)
 router.get('/recientes', async (req, res) => {
     try {
         const { limite = 5 } = req.query;
@@ -105,7 +100,6 @@ router.get('/recientes', async (req, res) => {
     }
 });
 
-// CORREGIDO: Últimas categorías vistas por el usuario
 router.get('/ultimas-categorias', async (req, res) => {
     try {
         const { session_uuid, limite = 3 } = req.query;
@@ -152,7 +146,6 @@ function obtenerIconoInteraccion(tipo) {
 }
 
 
-// Contar interacciones por tipo y fecha (para dashboard)
 router.get('/contar', async (req, res) => {
     try {
         const { tipo, fecha, desde } = req.query;
