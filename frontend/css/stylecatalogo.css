@@ -195,7 +195,9 @@
     color: var(--color-texto-titulo);
 }
 
-/* Rejilla de productos (responsive) */
+/* ===========================
+   REJILLA DE PRODUCTOS (CORREGIDA)
+   =========================== */
 .rejilla_productos {
     display: grid;
     gap: 30px;
@@ -231,7 +233,9 @@
     }
 }
 
-/* Tarjeta de producto */
+/* ===========================
+   TARJETA DE PRODUCTO
+   =========================== */
 .tarjeta_producto {
     transition: transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
@@ -312,7 +316,6 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-/* ESTRELLAS AMARILLAS */
 .rating-estrellas {
     display: inline-flex;
     align-items: center;
@@ -320,7 +323,7 @@
     font-size: 0.8rem;
 }
 .rating-estrellas i {
-    color: #ffb648 !important;  /* Forzar color amarillo dorado */
+    color: #ffb648 !important;
 }
 .rating-count {
     font-size: 0.7rem;
@@ -360,8 +363,10 @@
     border-color: var(--color-coral);
 }
 
-/* Paginación */
-.paginacion {
+/* ===========================
+   PAGINACIÓN (CORREGIDA: clase .pagination)
+   =========================== */
+.pagination {
     margin-top: 60px;
     display: flex;
     justify-content: center;
@@ -385,7 +390,7 @@
 }
 
 /* ===========================
-   4. RESPONSIVE (FILTROS EN MÓVIL)
+   RESPONSIVE (FILTROS EN MÓVIL)
    =========================== */
 @media (max-width: 850px) {
     .contenedor_catalogo {
@@ -434,7 +439,9 @@
     }
 }
 
-/* Transición para ocultar filtros hacia la derecha (PC) */
+/* ===========================
+   TRANSICIÓN PARA OCULTAR FILTROS (PC)
+   =========================== */
 .barra_lateral_filtros {
     transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
     transform: translateX(0);
@@ -447,11 +454,11 @@
     opacity: 0;
     visibility: hidden;
 }
-/* Ajuste del contenedor principal cuando sidebar está oculto */
 .contenedor_catalogo.sidebar-hidden .seccion_productos_catalogo {
     width: 100%;
 }
-/* Responsive: en móvil el comportamiento sigue siendo el original (despliegue hacia abajo) */
+
+/* Responsive: en móvil el comportamiento es distinto (despliegue hacia abajo) */
 @media (max-width: 850px) {
     .barra_lateral_filtros.sidebar_oculto {
         transform: translateY(-100%);
