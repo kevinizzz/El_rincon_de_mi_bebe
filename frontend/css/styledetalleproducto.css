@@ -82,6 +82,7 @@
     object-fit: cover;
 }
 
+
 .badge_rebaja {
     position: absolute;
     top: 18px;
@@ -447,12 +448,15 @@
     font-size: 1.5rem;
 }
 .tarjeta_resena {
-    display: block;
-    clear: both;
+    background: white;
+    border-radius: 28px;
+    padding: 20px 24px;
+    margin: 0 auto 20px;
     width: 100%;
-    margin-bottom: 20px;
+    transition: all 0.2s ease;
+    border: 1px solid #f5f5f5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
-
 .tarjeta_resena:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
