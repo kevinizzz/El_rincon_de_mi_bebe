@@ -196,7 +196,7 @@
 }
 
 /* ===========================
-   REJILLA DE PRODUCTOS (CORREGIDA)
+   REJILLA DE PRODUCTOS
    =========================== */
 .rejilla_productos {
     display: grid;
@@ -364,7 +364,7 @@
 }
 
 /* ===========================
-   PAGINACIÓN (CORREGIDA: clase .pagination)
+   PAGINACIÓN (clase .pagination, coincide con HTML)
    =========================== */
 .pagination {
     margin-top: 60px;
