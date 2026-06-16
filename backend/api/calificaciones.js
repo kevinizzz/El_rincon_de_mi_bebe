@@ -65,7 +65,6 @@ router.post('/', async (req, res) => {
         if (puntuacion < 1 || puntuacion > 5) {
             return res.status(400).json({ error: 'Puntuación debe ser 1-5' });
         }
-        // Verificar que la sesión existe
         const [sesion] = await db.query('SELECT id FROM sesiones WHERE session_uuid = ?', [session_uuid]);
         if (sesion.length === 0) {
             return res.status(404).json({ error: 'Sesión no encontrada' });
