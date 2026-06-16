@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `;
         document.body.appendChild(comboModal);
-        document.getElementById('closeComboModalBtn').addEventListener('click', closeComboModal);
         document.getElementById('closeComboModalFooterBtn').addEventListener('click', closeComboModal);
     }
 
